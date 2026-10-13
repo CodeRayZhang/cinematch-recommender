@@ -1,0 +1,10 @@
+.git
+.tools
+.cache
+.env
+**/node_modules
+**/dist
+**/target
+**/.data
+**/*.log
+docs

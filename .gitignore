@@ -1,0 +1,12 @@
+.DS_Store
+.tools/
+.cache/
+.env
+*.log
+**/node_modules/
+**/dist/
+**/target/
+**/.data/
+**/__pycache__/
+frontend/test-results/
+frontend/playwright-report/
