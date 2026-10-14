@@ -13,7 +13,7 @@ CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发�
 | 环境准备、开发启动、JAR / MySQL 部署、管理员、备份与升级 | [详细部署与运行指南](docs/deployment.md) |
 | 注册、个人中心、片单、推荐与管理后台的操作顺序 | [页面操作与执行步骤](docs/usage.md) |
 | 当前算法、信号权重、冷启动、探索模式及评估复现 | [推荐算法与评估指南](docs/recommendation.md) |
-| 模型数据准备、ALS 训练、启用、回退和备份 | [可训练推荐模型操作指南](docs/recommendation-models.md) |
+| 从克隆代码开始：下载官方评分、生成映射、ALS 训练、启用与备份 | [可训练推荐模型操作指南](docs/recommendation-models.md) |
 | 推荐效果、对照实验与局限 | [ALS 与融合推荐评估](docs/recommendation-model-evaluation.md) · [基础混合推荐评估](docs/recommendation-evaluation.md) · [探索模式评估](docs/recommendation-discovery-evaluation.md) · [本站推荐观察与评估口径](docs/recommendation-observation.md) |
 | 仓库自带 923 部电影、海报、导入与资料来源 | [电影数据与使用说明](docs/data-sources.md) · [片库文件](data/catalog/movies.json) |
 | 模块边界、图表维护与已完成验收 | [架构说明](docs/architecture.md) · [图表维护](docs/diagrams/README.md) · [验收记录](docs/verification.md) |

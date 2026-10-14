@@ -20,27 +20,61 @@
 
 历史评分保持独立用户命名空间，不创建本站账号，也不写入本站 reviews。当前作者本机采用旧项目已有 MovieLens 1M：1,000,209 条评分、6,040 位匿名用户、3,706 部被评分电影；与 923 部现有电影严格对应到 90 部。这个覆盖率是本机训练结果；仓库自带 923 部电影目录，但不附历史评分和已训练模型。
 
-先用 `bash scripts/dev.sh --catalog` 启动仓库片库，并按 [电影数据来源](data-sources.md) 的获取步骤准备 `.cache/catalog/wikidata-links.json`（`python3 scripts/fetch_movie_sources.py`）。电影元数据可以直接使用仓库的 `data/catalog/movies.json`，无需重新下载海报。再下载官方链接表（原始数据不提交到 Git）：
+下面适用于刚克隆代码的本机开发环境，不需要作者的旧项目、数据库或训练文件。先按 [环境准备](deployment.md#2-准备环境与代码) 安装 Java 21、Maven 3.9+、Node.js 22.12+、Python 3.9+，准备 `curl`、`unzip`；Windows 使用 WSL。ALS 在 CPU 上运行，无需 GPU 或 Spark，建议为 JVM 预留至少 1 GB 堆空间。
+
+**终端 A：初始化管理员并启动片库。** 进入仓库根目录，在 Bash 中执行；账号为 3–32 位小写字母、数字或下划线，密码至少 12 个字符。已有管理员可省略输入部分；同名普通账号不会自动提权。
+
+```sh
+read -r -p '管理员账号：' ADMIN_USERNAME
+read -r -s -p '管理员密码：' ADMIN_PASSWORD
+printf '\n'
+export ADMIN_USERNAME ADMIN_PASSWORD
+export JAVA_TOOL_OPTIONS='-Xmx1g'
+bash scripts/dev.sh --catalog
+# 服务停止后清理当前终端的设置
+unset ADMIN_USERNAME ADMIN_PASSWORD JAVA_TOOL_OPTIONS
+```
+
+保持终端 A 运行，页面地址为 `http://127.0.0.1:5173`，后端地址为 `http://127.0.0.1:8080`。已有自定义 JVM 配置时合并内存设置，不要直接覆盖。
+
+**终端 B：下载官方训练文件和电影 ID 对照资料。** 同样进入仓库根目录执行以下首次准备步骤。MovieLens 1M 提供实际训练评分；latest-small 此处只取电影表和 ID 链接表，不用它的评分替代 1M 数据。官方数据通过 [GroupLens 下载页](https://grouplens.org/datasets/movielens/1m/) 获取，使用范围见数据包 README。
+
+`python3 scripts/fetch_movie_sources.py` 获取 Wikidata 对照资料，并缓存中文及 TMDB 元数据；需要能够访问这些外部来源，可能受网络或限流影响。该步骤不写应用数据库，也不重新下载海报。仓库自带的 `data/catalog/movies.json` 可直接用于匹配。
 
 ```sh
 mkdir -p .cache/recommender
-curl --fail --location --output .cache/recommender/ml-latest-small.zip \
+curl --fail --location --retry 3 --output .cache/recommender/ml-1m.zip \
+  https://files.grouplens.org/datasets/movielens/ml-1m.zip
+unzip -n .cache/recommender/ml-1m.zip \
+  'ml-1m/movies.dat' 'ml-1m/ratings.dat' 'ml-1m/README' \
+  -d .cache/recommender
+
+curl --fail --location --retry 3 --output .cache/recommender/ml-latest-small.zip \
   https://files.grouplens.org/datasets/movielens/ml-latest-small.zip
-unzip -j .cache/recommender/ml-latest-small.zip \
+unzip -n -j .cache/recommender/ml-latest-small.zip \
   'ml-latest-small/links.csv' 'ml-latest-small/movies.csv' \
   'ml-latest-small/README.txt' -d .cache/recommender
 
-# MOVIELENS_DIRECTORY 指向你有权使用的 MovieLens 1M 目录，含 movies.dat / ratings.dat。
-# 本步骤需要当前应用已在 8080 运行，以读取真实电影 ID。
-export MOVIELENS_DIRECTORY=/absolute/path/to/ml-1m
+python3 scripts/fetch_movie_sources.py
+```
+
+**生成可训练数据集。** 后端保持运行，脚本读取当前数据库对应的真实电影 ID；它不写数据库。以下路径均相对于仓库根目录：
+
+```sh
 python3 scripts/prepare_recommender.py \
-  --movielens "$MOVIELENS_DIRECTORY" \
+  --movielens .cache/recommender/ml-1m \
   --links .cache/recommender \
   --wikidata .cache/catalog/wikidata-links.json \
   --catalog-metadata data/catalog/movies.json \
   --output backend/.data/recommender/datasets/movielens-1m \
   --name movielens-1m
 ```
+
+成功时打印清单，包括 `ratings`、`users`、`items`、`mappedItems` 和文件哈希。官方 1M 含 1,000,209 条评分；`mappedItems` 是能与当前片库严格匹配的电影数量，不等于全部 923 部。映射数需至少 3 才能启用模型；实际数取决于对照资料及当前片库，以输出报告为准。
+
+**进入页面训练并启用。** 用终端 A 创建的管理员登录 → `/admin` → 推荐模型 → 刷新状态 → 选择 `movielens-1m` → 开始训练。先保持默认 16 维、15 轮、正则 0.1、种子 42；状态为 READY 后点击“启用此版本”。新用户到 `/picks` 给至少 3 部评分引导中的模型覆盖电影评分，即可让个人 ALS 向量参与推荐。READY 表示计算成功，效果评估按 [独立评估文档](recommendation-model-evaluation.md) 执行。
+
+如果后台找不到数据集，检查应用的工作目录和 `app.recommender.data-directory`；生成文件必须位于该目录的 `datasets/movielens-1m/`。Docker 用户还需按第 4 节把准备好的目录复制进模型卷。重复准备时更换 `--output` 末级目录和 `--name`，例如都改成 `movielens-1m-v2`；不需要删除现有模型或数据库。
 
 支持官方 `::` 分隔的 1M 文件、旧项目逗号分隔文件，以及 MovieLens CSV。下载数据前阅读并遵守 [GroupLens 使用条件](https://grouplens.org/datasets/movielens/1m/)；链接表格式见 [官方说明](https://files.grouplens.org/datasets/movielens/ml-latest-small-README.html)。原始文件、匿名评分与训练快照不再分发。
 
