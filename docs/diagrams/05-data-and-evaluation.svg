@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1330" viewBox="0 0 1600 1330" role="img" aria-labelledby="title desc">
+  <title id="title">CineMatch · 数据导入与离线评估</title>
+  <desc id="desc">左侧：公开电影资料快照经Python下载、跨来源ID及字段校验、图片缓存后生成JSON，由显式启动的事务导入服务更新本地电影库。右侧：独立MovieLens数据按时间切分，训练数据生成候选和邻居，运行基线与探索评估，输出指标报告；不导入本站账号或评分。</desc>
+  <rect x="0" y="0" width="1600" height="1330" rx="0" fill="#f4f5ef" />
+  <rect x="0" y="0" width="1600" height="140" rx="0" fill="#1b3028" />
+  <text x="64" y="46" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#c9d8c8" text-anchor="start" font-weight="600">CINEMATCH  /  MOVIE RECOMMENDATION SYSTEM</text>
+  <text x="64" y="104" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="38" fill="#ffffff" text-anchor="start" font-weight="600">数据导入与离线评估</text>
+  <text x="1536" y="49" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#b7c9b9" text-anchor="end" font-weight="400">05 / 05</text>
+  <text x="1536" y="106" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#b7c9b9" text-anchor="end" font-weight="400">DATA PIPELINES</text>
+  <polyline points="64,1277 1536,1277" fill="none" stroke="#d6dfd7" stroke-width="1" stroke-linejoin="round" />
+  <text x="64" y="1307" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="start" font-weight="400">CineMatch  ·  当前实现 / Code-backed diagrams</text>
+  <text x="1536" y="1307" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="end" font-weight="400">2026-10-14  ·  可编辑源文件随代码维护</text>
+  <rect x="64" y="174" width="712" height="84" rx="16" fill="#e8efe5" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="88" y="225" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="29" fill="#426955" text-anchor="start" font-weight="600">A / 公开电影资料 → 本地片库</text>
+  <rect x="824" y="174" width="712" height="84" rx="16" fill="#faeee5" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="848" y="225" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="29" fill="#d66b4e" text-anchor="start" font-weight="600">B / MovieLens → 独立评估报告</text>
+  <polyline points="420,258 420,296" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="420.00,296.00 414.50,284.00 425.50,284.00" fill="#426955" />
+  <rect x="64" y="296" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="321" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="342" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">资料获取 · Python 脚本</text>
+  <text x="88" y="380" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">中文电影资料快照 + Wikidata ID 对照</text>
+  <text x="88" y="410" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">TMDB 数据集快照与图片来源</text>
+  <polyline points="420,436 420,474" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="420.00,474.00 414.50,462.00 425.50,462.00" fill="#426955" />
+  <rect x="64" y="474" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="499" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="520" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">跨来源核验与整理</text>
+  <text x="88" y="558" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">唯一 ID、首映年份、字段与片长规则</text>
+  <text x="88" y="588" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">图片下载 / 文件校验，记录来源 URL 与 SHA-256</text>
+  <polyline points="420,614 420,652" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="420.00,652.00 414.50,640.00 425.50,640.00" fill="#426955" />
+  <rect x="64" y="652" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="677" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="698" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">生成导入文件与本地图片</text>
+  <text x="88" y="736" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">ready-catalog.json + preparation-report.json</text>
+  <text x="88" y="766" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">catalog-posters/ 单独提供静态图片</text>
+  <polyline points="420,792 420,830" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="420.00,830.00 414.50,818.00 425.50,818.00" fill="#426955" />
+  <rect x="64" y="830" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="855" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="876" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">显式启动的事务导入</text>
+  <text x="88" y="914" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">按来源 URL 或精确标题 + 年份匹配；幂等更新</text>
+  <text x="88" y="944" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">有歧义整批回滚；保留电影 ID 与用户交互</text>
+  <polyline points="420,970 420,1008" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="420.00,1008.00 414.50,996.00 425.50,996.00" fill="#426955" />
+  <rect x="64" y="1008" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="1033" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="1054" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">应用片库</text>
+  <text x="88" y="1092" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">H2 / 可选 MySQL 保存电影及来源字段</text>
+  <text x="88" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">本地已扩充 923 部；仓库自带 18 部种子样例</text>
+  <polyline points="1180,258 1180,296" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1180.00,296.00 1174.50,284.00 1185.50,284.00" fill="#d66b4e" />
+  <rect x="824" y="296" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="846" y="321" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="866" y="342" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">独立历史数据 · MovieLens 1M</text>
+  <text x="848" y="380" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">1,000,209 条匿名评分 + 电影类型元数据</text>
+  <text x="848" y="410" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">独立电影 ID 空间，不映射到本站电影 ID</text>
+  <polyline points="1180,436 1180,474" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1180.00,474.00 1174.50,462.00 1185.50,462.00" fill="#d66b4e" />
+  <rect x="824" y="474" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="846" y="499" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="866" y="520" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">全局按时间切分 · 80 / 20</text>
+  <text x="848" y="558" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">800,168 条训练 / 200,041 条测试</text>
+  <text x="848" y="588" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">参考分、流行度、画像与邻居仅由训练数据计算</text>
+  <polyline points="1180,614 1180,652" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1180.00,652.00 1174.50,640.00 1185.50,640.00" fill="#d66b4e" />
+  <rect x="824" y="652" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="846" y="677" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="866" y="698" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">真实推荐器与固定对照</text>
+  <text x="848" y="736" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">默认混合排序 / 双探索实验 / 探索模式</text>
+  <text x="848" y="766" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">100 位新样本用户，与上一轮评估用户不重叠</text>
+  <polyline points="1180,792 1180,830" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1180.00,830.00 1174.50,818.00 1185.50,818.00" fill="#d66b4e" />
+  <rect x="824" y="830" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="846" y="855" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="866" y="876" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">离线指标与配对比较</text>
+  <text x="848" y="914" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">Precision / Recall / NDCG@12、命中率</text>
+  <text x="848" y="944" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">长尾曝光、覆盖率、类型多样性与 bootstrap</text>
+  <polyline points="1180,970 1180,1008" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1180.00,1008.00 1174.50,996.00 1185.50,996.00" fill="#d66b4e" />
+  <rect x="824" y="1008" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="846" y="1033" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="866" y="1054" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">输出报告与代码决策</text>
+  <text x="848" y="1092" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">JSON 指标 + Markdown 解释，可重复运行</text>
+  <text x="848" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">保留默认排序；探索模式由用户主动选择</text>
+  <rect x="64" y="1188" width="1472" height="68" rx="12" fill="#1b3028" />
+  <text x="800" y="1231" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="600">来源快照、完整片库与海报仅保存在本地；评估不写入应用账号、片单或评分。</text>
+</svg>

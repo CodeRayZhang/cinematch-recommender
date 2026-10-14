@@ -23,9 +23,19 @@ const router = createRouter({
       meta: { title: "我的片单" },
     },
     {
+      path: "/profile",
+      component: () => import("./views/ProfileView.vue"),
+      meta: { title: "个人中心" },
+    },
+    {
       path: "/admin",
       component: () => import("./views/AdminView.vue"),
       meta: { title: "内容管理" },
+    },
+    {
+      path: "/sources",
+      component: () => import("./views/SourcesView.vue"),
+      meta: { title: "资料来源" },
     },
     {
       path: "/:pathMatch(.*)*",

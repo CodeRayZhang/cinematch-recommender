@@ -68,8 +68,16 @@ function search() {
 }
 async function edit(movie?: Movie) {
   editingId.value = movie?.id || null;
-  const { id: ignored, ...rest } = movie || { id: 0, ...defaults() };
-  Object.assign(form, rest);
+  const values = defaults();
+  Object.assign(
+    form,
+    Object.fromEntries(
+      (Object.keys(values) as (keyof typeof values)[]).map((key) => [
+        key,
+        movie ? movie[key] : values[key],
+      ]),
+    ),
+  );
   formError.value = "";
   await nextTick();
   dialog.value?.showModal();

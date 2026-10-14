@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1080" viewBox="0 0 1600 1080" role="img" aria-labelledby="title desc">
+  <title id="title">CineMatch · 系统技术架构</title>
+  <desc id="desc">Vue 3 单页应用通过同源 HTTP/JSON 访问 Spring Boot 4 单体应用。Spring Security 保护业务 API，MyBatis 与少量 JdbcTemplate 访问 H2；MySQL 为待实机验证的可选配置。Vite 产物打入同一 JAR，海报从独立本地目录提供。</desc>
+  <rect x="0" y="0" width="1600" height="1080" rx="0" fill="#f4f5ef" />
+  <rect x="0" y="0" width="1600" height="140" rx="0" fill="#1b3028" />
+  <text x="64" y="46" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#c9d8c8" text-anchor="start" font-weight="600">CINEMATCH  /  MOVIE RECOMMENDATION SYSTEM</text>
+  <text x="64" y="104" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="38" fill="#ffffff" text-anchor="start" font-weight="600">系统技术架构</text>
+  <text x="1536" y="49" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#b7c9b9" text-anchor="end" font-weight="400">01 / 05</text>
+  <text x="1536" y="106" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#b7c9b9" text-anchor="end" font-weight="400">SYSTEM ARCHITECTURE</text>
+  <polyline points="64,1027 1536,1027" fill="none" stroke="#d6dfd7" stroke-width="1" stroke-linejoin="round" />
+  <text x="64" y="1057" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="start" font-weight="400">CineMatch  ·  当前实现 / Code-backed diagrams</text>
+  <text x="1536" y="1057" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="end" font-weight="400">2026-10-14  ·  可编辑源文件随代码维护</text>
+  <rect x="64" y="174" width="1472" height="114" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="199" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="220" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">浏览器 · Vue 3 单页应用</text>
+  <text x="88" y="258" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">TypeScript 5.9  /  Vue Router 4  /  Vite 8  /  Lucide 图标  ·  电影发现、推荐、片单、个人中心与管理页面</text>
+  <polyline points="632,288 632,344" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="632.00,344.00 626.50,332.00 637.50,332.00" fill="#83998c" />
+  <text x="658" y="324" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">同源 HTTP / JSON  ·  Cookie Session</text>
+  <rect x="64" y="344" width="1136" height="456" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="88" y="386" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="28" fill="#1b3028" text-anchor="start" font-weight="600">Spring Boot 4.0.8  /  Java 21  /  Spring MVC</text>
+  <rect x="88" y="410" width="1088" height="66" rx="10" fill="#e8efe5" />
+  <text x="110" y="451" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#426955" text-anchor="start" font-weight="600">Spring Security  ·  Session 登录态  ·  CSRF 校验  ·  USER / ADMIN 授权  ·  BCrypt</text>
+  <text x="88" y="514" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">按业务组织的 Controller / Service 模块</text>
+  <rect x="88" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="104" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">账号与资料</text>
+  <text x="104" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">auth</text>
+  <text x="104" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">登录 / 个人偏好</text>
+  <rect x="272" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="288" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">电影目录</text>
+  <text x="288" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">movie</text>
+  <text x="288" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">查询 / 详情</text>
+  <rect x="456" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="472" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">个人片单</text>
+  <text x="472" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">library</text>
+  <text x="472" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">片单 / 评分</text>
+  <rect x="640" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="656" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">推荐排序</text>
+  <text x="656" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">movie</text>
+  <text x="656" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">内容 / 邻域</text>
+  <rect x="824" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="840" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">内容管理</text>
+  <text x="840" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">admin</text>
+  <text x="840" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">电影 / 概览</text>
+  <rect x="1008" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="1024" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">目录导入</text>
+  <text x="1024" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">catalog</text>
+  <text x="1024" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">显式启动导入</text>
+  <polyline points="632,660 632,694" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="632.00,694.00 626.50,682.00 637.50,682.00" fill="#83998c" />
+  <rect x="88" y="694" width="1088" height="76" rx="10" fill="#e8efe5" />
+  <text x="110" y="726" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">持久化 · MyBatis Mapper / 参数化 SQL</text>
+  <text x="110" y="754" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">事务保证批量片单、评分和目录导入一致性；管理统计与用户概览使用 JdbcTemplate。</text>
+  <rect x="1232" y="344" width="304" height="212" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="1254" y="369" width="5" height="25" rx="2" fill="#426955" />
+  <text x="1274" y="390" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">构建与交付</text>
+  <text x="1256" y="428" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#53665d" text-anchor="start" font-weight="400">Vite → frontend/dist</text>
+  <text x="1256" y="458" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#53665d" text-anchor="start" font-weight="400">Maven → Boot JAR</text>
+  <text x="1256" y="488" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#53665d" text-anchor="start" font-weight="400">页面与 API 同进程提供</text>
+  <text x="1256" y="518" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#53665d" text-anchor="start" font-weight="400">开发代理：5173 → 8080</text>
+  <rect x="1232" y="580" width="304" height="220" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="1254" y="605" width="5" height="25" rx="2" fill="#426955" />
+  <text x="1274" y="626" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">维护与校验</text>
+  <text x="1256" y="664" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">Flyway 版本化迁移</text>
+  <text x="1256" y="694" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">GitHub Actions CI</text>
+  <text x="1256" y="724" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">HTTP / 推荐 / 导入测试</text>
+  <text x="1256" y="754" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">MovieLens 离线评估</text>
+  <polyline points="432,800 432,854" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="432.00,854.00 426.50,842.00 437.50,842.00" fill="#83998c" />
+  <polyline points="984,800 984,826 1168,826 1168,854" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1168.00,854.00 1162.50,842.00 1173.50,842.00" fill="#83998c" />
+  <rect x="64" y="854" width="712" height="154" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="879" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="900" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#426955" text-anchor="start" font-weight="600">关系数据库</text>
+  <text x="88" y="938" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">H2 文件库：本地已验证</text>
+  <text x="88" y="968" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">MySQL 8.4 / Compose：已有配置，待实机验证</text>
+  <rect x="800" y="854" width="736" height="154" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="822" y="879" width="5" height="25" rx="2" fill="#426955" />
+  <text x="842" y="900" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#426955" text-anchor="start" font-weight="600">图片与本地文件</text>
+  <text x="824" y="938" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">JAR 内静态资源 + 独立 catalog-posters 目录</text>
+  <text x="824" y="968" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">来源快照、图片校验记录、备份保存在本地</text>
+</svg>

@@ -29,7 +29,7 @@ public class LibraryController {
         "entries",
         library.entries(id),
         "movies",
-        library.movies(id),
+        library.preferenceMovies(id),
         "reviews",
         library.reviews(id));
   }
@@ -47,6 +47,30 @@ public class LibraryController {
     library.remove(accounts.findByUsername(user.getName()).id(), movieId);
     return Map.of("message", "已从片单移除");
   }
+
+  @PutMapping("/me/library/batch")
+  @Transactional
+  public Map<String, String> batch(Principal user, @Valid @RequestBody Batch input) {
+    var ids = new LinkedHashSet<>(input.movieIds());
+    // Validate the entire batch before changing any rows.
+    ids.forEach(id -> MovieController.require(movies, id));
+    long userId = accounts.findByUsername(user.getName()).id();
+    for (long id : ids) {
+      if (input.action().equals("REMOVE")) library.remove(userId, id);
+      else library.save(userId, id, input.action());
+    }
+    return Map.of("message", "已更新 " + ids.size() + " 部电影");
+  }
+
+  @DeleteMapping("/me/reviews/{movieId}")
+  public Map<String, String> deleteReview(Principal user, @PathVariable long movieId) {
+    library.removeReview(accounts.findByUsername(user.getName()).id(), movieId);
+    return Map.of("message", "评分和短评已删除，看过状态保留");
+  }
+
+  public record Batch(
+      @NotEmpty @Size(max = 100) List<@NotNull @Positive Long> movieIds,
+      @NotNull @Pattern(regexp = "WATCHLIST|WATCHED|REMOVE") String action) {}
 
   @PutMapping("/me/reviews/{movieId}")
   @Transactional

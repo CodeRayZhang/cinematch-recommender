@@ -14,4 +14,8 @@ public record Movie(
     String synopsis,
     String posterUrl,
     String backdropUrl,
-    boolean featured) {}
+    boolean featured,
+    String dataSource,
+    String sourceId,
+    String sourceUrl,
+    String sourceSnapshot) {}

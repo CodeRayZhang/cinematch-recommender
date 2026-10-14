@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1440" viewBox="0 0 1600 1440" role="img" aria-labelledby="title desc">
+  <title id="title">CineMatch · 混合推荐计算流程</title>
+  <desc id="desc">请求时读取候选、个人历史与邻居评分，排除已交互与隐藏影片并应用类型时长约束。内容偏好、平滑口碑与收缩的Pearson邻域分融合，再进行多样性及导演约束重排。精选模式不强制探索，探索模式最多六个探索位置，输出最多12部电影及解释。</desc>
+  <rect x="0" y="0" width="1600" height="1440" rx="0" fill="#f4f5ef" />
+  <rect x="0" y="0" width="1600" height="140" rx="0" fill="#1b3028" />
+  <text x="64" y="46" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#c9d8c8" text-anchor="start" font-weight="600">CINEMATCH  /  MOVIE RECOMMENDATION SYSTEM</text>
+  <text x="64" y="104" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="38" fill="#ffffff" text-anchor="start" font-weight="600">混合推荐计算流程</text>
+  <text x="1536" y="49" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#b7c9b9" text-anchor="end" font-weight="400">04 / 05</text>
+  <text x="1536" y="106" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#b7c9b9" text-anchor="end" font-weight="400">ONLINE RANKING</text>
+  <polyline points="64,1387 1536,1387" fill="none" stroke="#d6dfd7" stroke-width="1" stroke-linejoin="round" />
+  <text x="64" y="1417" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="start" font-weight="400">CineMatch  ·  当前实现 / Code-backed diagrams</text>
+  <text x="1536" y="1417" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="end" font-weight="400">2026-10-14  ·  可编辑源文件随代码维护</text>
+  <rect x="64" y="174" width="1472" height="106" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="199" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="220" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">01  接收推荐请求</text>
+  <text x="88" y="258" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">GET /api/recommendations  ·  mode / genres / maxRuntime / exclude  ·  参数白名单校验，游客可访问</text>
+  <polyline points="800,280 800,308 300,308 300,336" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="300.00,336.00 294.50,324.00 305.50,324.00" fill="#83998c" />
+  <polyline points="800,280 800,308 800,308 800,336" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,336.00 794.50,324.00 805.50,324.00" fill="#83998c" />
+  <polyline points="800,280 800,308 1300,308 1300,336" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1300.00,336.00 1294.50,324.00 1305.50,324.00" fill="#83998c" />
+  <rect x="64" y="336" width="472" height="150" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="361" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="382" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">02  电影候选</text>
+  <text x="88" y="420" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">最多 5,000 部电影</text>
+  <text x="88" y="450" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">类型、导演、国家、年代和口碑</text>
+  <rect x="564" y="336" width="472" height="150" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="586" y="361" width="5" height="25" rx="2" fill="#426955" />
+  <text x="606" y="382" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">个人历史与偏好</text>
+  <text x="588" y="420" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">片单、评分、长期类型与隐藏记录</text>
+  <text x="588" y="450" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">游客使用空历史；本次类型可覆盖长期类型</text>
+  <rect x="1064" y="336" width="472" height="150" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="1086" y="361" width="5" height="25" rx="2" fill="#426955" />
+  <text x="1106" y="382" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">邻居评分召回</text>
+  <text x="1088" y="420" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">共同评分筛选，最多 200 位用户</text>
+  <text x="1088" y="450" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">读取最多 50,000 条评分</text>
+  <polyline points="300,486 300,516 800,516" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polyline points="800,486 800,516 800,516" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polyline points="1300,486 1300,516 800,516" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polyline points="800,516 800,548" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,548.00 794.50,536.00 805.50,536.00" fill="#83998c" />
+  <rect x="64" y="548" width="1472" height="106" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="573" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="594" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">03  排除与硬筛选</text>
+  <text x="88" y="632" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">排除已入片单、已评分、已隐藏、本轮已展示电影；匹配任一所选类型，并满足片长上限（未知片长不通过限时筛选）。</text>
+  <polyline points="800,654 800,682 300,682 300,712" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="300.00,712.00 294.50,700.00 305.50,700.00" fill="#83998c" />
+  <polyline points="800,654 800,682 800,682 800,712" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,712.00 794.50,700.00 805.50,700.00" fill="#83998c" />
+  <polyline points="800,654 800,682 1300,682 1300,712" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1300.00,712.00 1294.50,700.00 1305.50,700.00" fill="#83998c" />
+  <rect x="64" y="712" width="472" height="176" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="737" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="758" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">04  内容偏好</text>
+  <text x="88" y="796" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">类型逆频率 + 导演 / 国家 / 年代</text>
+  <text x="88" y="826" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">4–5 星正向，1–2 星负向</text>
+  <text x="88" y="856" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">3 星中性，片单提供较弱信号</text>
+  <rect x="564" y="712" width="472" height="176" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="586" y="737" width="5" height="25" rx="2" fill="#426955" />
+  <text x="606" y="758" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">平滑口碑</text>
+  <text x="588" y="796" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">参考分与评分人数共同计算</text>
+  <text x="588" y="826" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">使用 7.5 分 / 1,000 票先验平滑</text>
+  <text x="588" y="856" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">与本站用户的个人评分区分</text>
+  <rect x="1064" y="712" width="472" height="176" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="1086" y="737" width="5" height="25" rx="2" fill="#426955" />
+  <text x="1106" y="758" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">邻域协同分</text>
+  <text x="1088" y="796" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">至少三部共同评分；Pearson + 收缩</text>
+  <text x="1088" y="826" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">最多 40 位正相关邻居</text>
+  <text x="1088" y="856" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="19" fill="#53665d" text-anchor="start" font-weight="400">候选至少两位邻居支持；不足则回退</text>
+  <polyline points="300,888 300,916 800,916" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polyline points="800,888 800,916 800,916" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polyline points="1300,888 1300,916 800,916" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polyline points="800,916 800,946" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,946.00 794.50,934.00 805.50,934.00" fill="#83998c" />
+  <rect x="64" y="946" width="1472" height="142" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="971" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="992" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">05  融合打分</text>
+  <text x="88" y="1030" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="23" fill="#53665d" text-anchor="start" font-weight="400">常规：0.30 × 平滑口碑 + 0.70 × 内容偏好 + 0.65 × 邻域分</text>
+  <text x="88" y="1060" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="23" fill="#53665d" text-anchor="start" font-weight="400">无片单和评分、且指定本次类型：0.85 × 平滑口碑 + 0.15 × 内容偏好</text>
+  <polyline points="800,1088 800,1124" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,1124.00 794.50,1112.00 805.50,1112.00" fill="#83998c" />
+  <rect x="64" y="1124" width="1472" height="144" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="88" y="1164" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">06  多样性与探索重排</text>
+  <text x="88" y="1203" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">0.08 × 相似度惩罚；优先每位导演最多两部，其他候选不足时放宽。</text>
+  <text x="88" y="1241" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">精选：不强制探索   /   探索：最多六个位置选择有评分依据的长尾影片，无合格候选则正常补位。</text>
+  <polyline points="800,1268 800,1302" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,1302.00 794.50,1290.00 805.50,1290.00" fill="#83998c" />
+  <rect x="64" y="1302" width="1472" height="64" rx="12" fill="#1b3028" />
+  <text x="800" y="1344" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="600">返回最多 12 部电影  +  推荐理由  +  exploration 标记</text>
+</svg>

@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">CineMatch · 管理后台与权限边界</title>
+  <desc id="desc">当前仅 USER 与 ADMIN 两种角色。ADMIN 通过 Spring Security 访问管理 API，可增删改电影、设置首页甄选、查看最近100位用户公开字段及运营计数；没有用户增删改、封禁、角色管理或多级管理员功能。</desc>
+  <rect x="0" y="0" width="1600" height="1000" rx="0" fill="#f4f5ef" />
+  <rect x="0" y="0" width="1600" height="140" rx="0" fill="#1b3028" />
+  <text x="64" y="46" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#c9d8c8" text-anchor="start" font-weight="600">CINEMATCH  /  MOVIE RECOMMENDATION SYSTEM</text>
+  <text x="64" y="104" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="38" fill="#ffffff" text-anchor="start" font-weight="600">管理后台与权限边界</text>
+  <text x="1536" y="49" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#b7c9b9" text-anchor="end" font-weight="400">03 / 05</text>
+  <text x="1536" y="106" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#b7c9b9" text-anchor="end" font-weight="400">ADMIN CAPABILITIES</text>
+  <polyline points="64,947 1536,947" fill="none" stroke="#d6dfd7" stroke-width="1" stroke-linejoin="round" />
+  <text x="64" y="977" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="start" font-weight="400">CineMatch  ·  当前实现 / Code-backed diagrams</text>
+  <text x="1536" y="977" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#53665d" text-anchor="end" font-weight="400">2026-10-14  ·  可编辑源文件随代码维护</text>
+  <rect x="64" y="178" width="432" height="142" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="203" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="224" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">管理员登录</text>
+  <text x="88" y="262" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">使用已初始化的 ADMIN 账号</text>
+  <text x="88" y="292" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">与用户站共用登录入口</text>
+  <polyline points="496,249 560,249" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="560.00,249.00 548.00,254.50 548.00,243.50" fill="#83998c" />
+  <rect x="560" y="178" width="480" height="142" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="582" y="203" width="5" height="25" rx="2" fill="#426955" />
+  <text x="602" y="224" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">服务端权限校验</text>
+  <text x="584" y="262" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">Spring Security + CSRF</text>
+  <text x="584" y="292" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">/api/admin/** 要求 ADMIN</text>
+  <polyline points="1040,249 1104,249" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="1104.00,249.00 1092.00,254.50 1092.00,243.50" fill="#83998c" />
+  <rect x="1104" y="178" width="432" height="142" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="1126" y="203" width="5" height="25" rx="2" fill="#426955" />
+  <text x="1146" y="224" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">内容管理页面</text>
+  <text x="1128" y="262" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">头像菜单进入 /admin</text>
+  <text x="1128" y="292" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">前端入口与后端授权配合</text>
+  <polyline points="1320,320 1320,354 800,354 800,388" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
+  <polygon points="800.00,388.00 794.50,376.00 805.50,376.00" fill="#83998c" />
+  <rect x="64" y="388" width="1472" height="388" rx="16" fill="#e8efe5" stroke="#d6dfd7" stroke-width="1.5" />
+  <text x="88" y="431" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">ADMIN 可用能力</text>
+  <rect x="88" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="110" y="485" width="5" height="25" rx="2" fill="#426955" />
+  <text x="130" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">电影内容管理</text>
+  <text x="112" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">搜索和分页浏览片库</text>
+  <text x="112" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">新增 / 编辑 / 删除电影</text>
+  <text x="112" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">编辑资料与海报地址</text>
+  <text x="112" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">设置或取消首页甄选</text>
+  <rect x="112" y="688" width="220" height="32" rx="8" fill="#e8efe5" />
+  <text x="222.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#426955" text-anchor="middle" font-weight="600">Movie CRUD</text>
+  <rect x="576" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="598" y="485" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="618" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#d66b4e" text-anchor="start" font-weight="600">用户概览 · 只读</text>
+  <text x="600" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">查看最近 100 位用户</text>
+  <text x="600" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">账号、昵称、角色</text>
+  <text x="600" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">注册时间</text>
+  <text x="600" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">不返回密码或密码哈希</text>
+  <rect x="600" y="688" width="220" height="32" rx="8" fill="#faeee5" />
+  <text x="710.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#d66b4e" text-anchor="middle" font-weight="600">Read-only users</text>
+  <rect x="1064" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="1086" y="485" width="5" height="25" rx="2" fill="#426955" />
+  <text x="1106" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">运营统计</text>
+  <text x="1088" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">电影总数</text>
+  <text x="1088" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">用户总数</text>
+  <text x="1088" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">评分记录数</text>
+  <text x="1088" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">片单条目数</text>
+  <rect x="1088" y="688" width="220" height="32" rx="8" fill="#e8efe5" />
+  <text x="1198.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#426955" text-anchor="middle" font-weight="600">Aggregate counts</text>
+  <rect x="64" y="812" width="712" height="116" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="86" y="837" width="5" height="25" rx="2" fill="#426955" />
+  <text x="106" y="858" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">管理员初始化</text>
+  <text x="88" y="896" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">通过环境变量创建账号；无默认管理员和默认密码。</text>
+  <rect x="800" y="812" width="736" height="116" rx="16" fill="#faeee5" stroke="#d6dfd7" stroke-width="1.5" />
+  <rect x="822" y="837" width="5" height="25" rx="2" fill="#d66b4e" />
+  <text x="842" y="858" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#d66b4e" text-anchor="start" font-weight="600">当前边界</text>
+  <text x="824" y="896" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="20" fill="#53665d" text-anchor="start" font-weight="400">未实现用户增删改、封禁、角色编辑或多级管理员。</text>
+</svg>

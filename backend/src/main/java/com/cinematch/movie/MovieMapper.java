@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface MovieMapper {
   String COLUMNS =
-      "id,title,original_title,release_year,genres,runtime,rating,rating_count,director,country,synopsis,poster_url,backdrop_url,featured";
+      "id,title,original_title,release_year,genres,runtime,rating,rating_count,director,country,synopsis,poster_url,backdrop_url,featured,data_source,source_id,source_url,source_snapshot";
   String FILTER =
       " WHERE (#{q} = '' OR LOWER(title) LIKE CONCAT('%', LOWER(#{q}), '%') OR"
           + " LOWER(original_title) LIKE CONCAT('%', LOWER(#{q}), '%') OR LOWER(director) LIKE"
@@ -35,7 +35,7 @@ public interface MovieMapper {
   @Select("SELECT " + COLUMNS + " FROM movies WHERE id = #{id}")
   Movie find(long id);
 
-  @Select("SELECT " + COLUMNS + " FROM movies ORDER BY featured DESC, rating_count DESC LIMIT 300")
+  @Select("SELECT " + COLUMNS + " FROM movies ORDER BY featured DESC, rating_count DESC LIMIT 5000")
   List<Movie> candidates();
 
   @Select("SELECT " + COLUMNS + " FROM movies WHERE featured = TRUE ORDER BY id LIMIT 3")
@@ -49,8 +49,8 @@ public interface MovieMapper {
 
   @Update(
       "UPDATE movies SET"
-          + " title=#{title},original_title=#{originalTitle},release_year=#{releaseYear},genres=#{genres},runtime=#{runtime},rating=#{rating},rating_count=#{ratingCount},director=#{director},country=#{country},synopsis=#{synopsis},poster_url=#{posterUrl},backdrop_url=#{backdropUrl},featured=#{featured}"
-          + " WHERE id=#{id}")
+          + " title=#{title},original_title=#{originalTitle},release_year=#{releaseYear},genres=#{genres},runtime=#{runtime},rating=#{rating},rating_count=#{ratingCount},director=#{director},country=#{country},synopsis=#{synopsis},poster_url=#{posterUrl},backdrop_url=#{backdropUrl},featured=#{featured},"
+          + " data_source='manual' WHERE id=#{id}")
   int update(Movie movie);
 
   @Delete("DELETE FROM movies WHERE id=#{id}")

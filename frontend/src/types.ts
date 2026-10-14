@@ -13,6 +13,10 @@ export interface Movie {
   posterUrl: string;
   backdropUrl: string;
   featured: boolean;
+  dataSource: "demo" | "manual" | "douban";
+  sourceId: string | null;
+  sourceUrl: string | null;
+  sourceSnapshot: string | null;
 }
 export interface User {
   id: number;
@@ -43,4 +47,12 @@ export interface MoviePage {
 export interface Pick {
   movie: Movie;
   reason: string;
+  exploration: boolean;
+}
+
+export interface Profile {
+  displayName: string;
+  bio: string;
+  preferredGenres: string;
+  joinedAt: string;
 }

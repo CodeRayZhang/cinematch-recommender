@@ -3,6 +3,7 @@ import { ref } from "vue";
 import type { Movie } from "../types";
 import { movieStatus, toggleWatchlist, notify } from "../state";
 import Icon from "./Icon.vue";
+import { ratingLabel, sourceNote } from "../movieSource";
 defineProps<{ movie: Movie; reason?: string; index?: number }>();
 const saving = ref(false);
 async function save(id: number) {
@@ -45,7 +46,9 @@ function fallback(e: Event) {
           >走进这部电影 <Icon name="ArrowUpRight" :size="17"
         /></span>
       </RouterLink>
-      <span class="rating-badge" title="策展参考评分，演示数据"
+      <span
+        class="rating-badge"
+        :title="`${ratingLabel(movie)} · ${sourceNote(movie)}`"
         ><Icon name="Star" :size="12" />{{ movie.rating.toFixed(1) }}</span
       >
       <button

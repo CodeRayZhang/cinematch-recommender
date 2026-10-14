@@ -94,7 +94,11 @@ public class AdminController {
           synopsis.strip(),
           posterUrl,
           backdropUrl,
-          featured);
+          featured,
+          "manual",
+          null,
+          null,
+          null);
     }
   }
 }

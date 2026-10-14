@@ -60,8 +60,22 @@ public interface LibraryMapper {
       @Param("stars") int stars,
       @Param("body") String body);
 
+  @Delete("DELETE FROM reviews WHERE user_id=#{userId} AND movie_id=#{movieId}")
+  void removeReview(@Param("userId") long userId, @Param("movieId") long movieId);
+
+  // Only peers sharing at least two ratings are useful; bound the work for a personal project.
+  @Select(
+      "SELECT r.user_id, r.movie_id, r.stars FROM reviews r JOIN (SELECT peer.user_id FROM reviews"
+          + " own JOIN reviews peer ON own.movie_id=peer.movie_id AND own.user_id != peer.user_id"
+          + " WHERE own.user_id=#{userId} GROUP BY peer.user_id HAVING COUNT(*) >= 2 ORDER BY"
+          + " COUNT(*) DESC, peer.user_id LIMIT 200) neighbors ON r.user_id=neighbors.user_id ORDER"
+          + " BY r.user_id, r.movie_id LIMIT 50000")
+  List<Signal> neighborRatings(long userId);
+
+  record Signal(long userId, long movieId, int stars) {}
+
   class MovieMapperColumns {
     static final String PREFIXED =
-        "m.id,m.title,m.original_title,m.release_year,m.genres,m.runtime,m.rating,m.rating_count,m.director,m.country,m.synopsis,m.poster_url,m.backdrop_url,m.featured";
+        "m.id,m.title,m.original_title,m.release_year,m.genres,m.runtime,m.rating,m.rating_count,m.director,m.country,m.synopsis,m.poster_url,m.backdrop_url,m.featured,m.data_source,m.source_id,m.source_url,m.source_snapshot";
   }
 }

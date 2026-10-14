@@ -1,0 +1,2 @@
+# Only needed to regenerate PNG diagrams; SVG generation and CI use stdlib.
+Pillow==11.3.0

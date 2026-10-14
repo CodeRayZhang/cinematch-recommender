@@ -1,0 +1,53 @@
+{
+  "dataset": "MovieLens 1M (existing local copy; raw files not redistributed)",
+  "ratings": 1000209,
+  "catalogMovies": 3662,
+  "cutoffUnix": 975768738,
+  "trainRatings": 800168,
+  "testRatings": 200041,
+  "eligibleUsers": 843,
+  "evaluatedUsers": 100,
+  "seed": 20261013,
+  "k": 12,
+  "protocol": "Global chronological 80/20 split; tied cutoff timestamps stay in training; train-only rating aggregates and neighbors; relevant >=4 stars; full train catalog minus seen; sample users with >=20 train ratings and >=5 eligible future positives. No tuning on holdout.",
+  "sha256": {
+    "ratings.dat": "0ae247f6f5436bbaad08c2c135f1a14717a29b041b69a1ab108eacb11019663f",
+    "movies.dat": "c822bd5e048757be63edcf9f5e0741f988bd449d5d6cd72dc9ed303cab1bdc60"
+  },
+  "metrics": {
+    "baseline": {
+      "meanRankingMs": 5.2602562299999995,
+      "hitRateAt12": 0.38,
+      "genreDiversity": 0.3903741582491583,
+      "recallAt12": 0.012180984837584395,
+      "precisionAt12": 0.05583333333333333,
+      "catalogCoverage": 0.07209175314036045,
+      "p95RankingMs": 5.682458,
+      "ndcgAt12": 0.06407686985822582
+    },
+    "content": {
+      "meanRankingMs": 27.232526269999997,
+      "hitRateAt12": 0.59,
+      "genreDiversity": 0.2253977272727273,
+      "recallAt12": 0.031041233677099954,
+      "precisionAt12": 0.12666666666666665,
+      "catalogCoverage": 0.1286182413981431,
+      "p95RankingMs": 28.708458,
+      "ndcgAt12": 0.15079522688305524
+    },
+    "hybrid": {
+      "meanRankingMs": 30.08796999,
+      "hitRateAt12": 0.76,
+      "genreDiversity": 0.5867218614718614,
+      "recallAt12": 0.05279282431564434,
+      "precisionAt12": 0.2025,
+      "catalogCoverage": 0.05488803932277444,
+      "p95RankingMs": 32.303959,
+      "ndcgAt12": 0.22391099953225294
+    }
+  },
+  "pairedBootstrapNdcgDelta95": [
+    0.11991318319380279,
+    0.20064765584161887
+  ]
+}

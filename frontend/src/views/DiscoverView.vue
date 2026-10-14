@@ -29,6 +29,15 @@ const sort = computed(() => String(route.query.sort || "popular"));
 const q = computed(() => String(route.query.q || ""));
 const page = computed(() => Math.max(1, Number(route.query.page) || 1));
 const pageCount = computed(() => Math.ceil((data.value?.total || 0) / 12));
+const pageItems = computed(() => {
+  const total = pageCount.value;
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const current = Math.min(page.value, total);
+  if (current <= 4) return [1, 2, 3, 4, 5, "end-gap", total];
+  if (current >= total - 3)
+    return [1, "start-gap", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "start-gap", current - 1, current, current + 1, "end-gap", total];
+});
 let controller: AbortController | undefined;
 async function load() {
   controller?.abort();
@@ -213,18 +222,22 @@ onMounted(async () => {
             aria-label="上一页"
             @click="filter('page', String(page - 1))"
           >
-            <Icon name="ChevronLeft" /></button
-          ><button
-            v-for="p in pageCount"
-            :key="p"
-            class="page-button"
-            :class="{ active: p === page }"
-            :aria-label="`第 ${p} 页`"
-            :aria-current="p === page ? 'page' : undefined"
-            @click="filter('page', String(p))"
-          >
-            {{ p }}</button
-          ><button
+            <Icon name="ChevronLeft" />
+          </button>
+          <template v-for="p in pageItems" :key="p">
+            <button
+              v-if="typeof p === 'number'"
+              class="page-button"
+              :class="{ active: p === page }"
+              :aria-label="`第 ${p} 页`"
+              :aria-current="p === page ? 'page' : undefined"
+              @click="filter('page', String(p))"
+            >
+              {{ p }}
+            </button>
+            <span v-else class="page-gap" aria-hidden="true">…</span>
+          </template>
+          <button
             class="icon-button"
             :disabled="page >= pageCount"
             aria-label="下一页"

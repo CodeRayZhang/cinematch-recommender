@@ -68,6 +68,8 @@ onMounted(loadSession);
           </button>
           <div v-if="menuOpen" class="account-dropdown">
             <strong>{{ user.displayName }}</strong
+            ><RouterLink to="/profile"
+              ><Icon name="Film" :size="16" />个人中心</RouterLink
             ><RouterLink to="/library"
               ><Icon name="Bookmark" :size="16" />我的片单</RouterLink
             ><RouterLink v-if="user.role === 'ADMIN'" to="/admin"
@@ -92,7 +94,7 @@ onMounted(loadSession);
   <footer class="site-footer">
     <RouterLink to="/" class="footer-brand"
       >CineMatch<span>让好电影，遇见你。</span></RouterLink
-    ><span class="footer-note">一部电影，一段与自己的对话。</span
+    ><RouterLink to="/sources" class="footer-note">资料与图片来源 ↗</RouterLink
     ><span class="footer-edition"
       >EST. 2018 <span>↗</span> REIMAGINED 2026</span
     >
