@@ -126,3 +126,13 @@
 - `check_catalog_bundle.py` 对目录及所有图片执行 SHA-256、长度、唯一来源 ID、字段白名单和引用完整性检查；与当前预览逐字段比较 923 条资料、逐一校验 924 个图片响应，全部一致。
 - 使用独立临时 H2 文件库和现有构建 JAR 运行两次，未改动真实本地数据库。首次新增 905、更新 18；重启重复导入新增 0、更新 923。全部电影 ID、测试账号、两部电影的命名片单和个人五星评分均保留。两轮均逐字段比较完整目录并核对所有图片响应。
 - 六项 Python 回归、开发脚本 Bash 语法、五张架构图一致性和 `git diff --check` 通过。新增 `--catalog` 开发入口、显式 JAR 参数和 `compose.catalog.yml`；自动检查覆盖数据目录变动，并在真实 Compose / MySQL 环境执行完整片库导入和重启校验。远端结果见 [Verify CineMatch](https://github.com/CodeRayZhang/cinematch-recommender/actions/workflows/verify.yml) 对应本次提交的运行。
+
+
+### 片库提交的远端验收结果
+
+[GitHub Actions 38586333537](https://github.com/CodeRayZhang/cinematch-recommender/actions/runs/38586333537) 已全部通过，对应功能提交 `c3fb14bc2922083c93bbafd6f421db5f955871c9`。
+
+- 后端 66 项中 64 项通过、2 项依赖外部数据的离线评估按设计跳过；包含 22 项真实 MySQL HTTP 契约。桌面和手机 16 条浏览器流程通过。
+- 实际 Compose 容器中，原有账号、片单、评分及活动模型重启保留检查通过。随后加载 `compose.catalog.yml`，对 923 条电影资料逐字段核对、对 924 个图片响应逐一核对 SHA-256；重启应用后再次通过完整核对，无重复电影。
+- 五组图表一致性、完整片库文件校验、前端格式 / 类型 / 构建与六项 Python 回归通过。容器构建内重复运行的测试未重复计数。
+- 验收后补齐关联算法文档中的片库入口，并增加 JSON 的 LF 属性。本地以 `core.autocrlf=true`、`core.eol=crlf` 模拟检出后，资料字节哈希仍与清单一致。该补充不改动已验收的应用和导入逻辑。
