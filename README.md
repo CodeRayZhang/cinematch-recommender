@@ -17,6 +17,9 @@ CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发�
 | 推荐效果、对照实验与局限 | [ALS 与融合推荐评估](docs/recommendation-model-evaluation.md) · [基础混合推荐评估](docs/recommendation-evaluation.md) · [探索模式评估](docs/recommendation-discovery-evaluation.md) · [本站推荐观察与评估口径](docs/recommendation-observation.md) |
 | 仓库自带 923 部电影、海报、导入与资料来源 | [电影数据与使用说明](docs/data-sources.md) · [片库文件](data/catalog/movies.json) |
 | 模块边界、图表维护与已完成验收 | [架构说明](docs/architecture.md) · [图表维护](docs/diagrams/README.md) · [验收记录](docs/verification.md) |
+| 15 分钟答辩、系统与推荐算法展示、逐页讲稿和演示安排 | [答辩材料](docs/defense/README.md) · [可编辑 PPTX](docs/defense/CineMatch-Defense.pptx) · [PDF 预览](docs/defense/CineMatch-Defense.pdf) · [讲稿手册](docs/defense/speaker-guide.md) |
+
+答辩材料按 15 分钟组织，含 18 页正文与 6 页技术附录，覆盖当前系统、ALS-WR 与融合推荐、真实评估和演示步骤。
 
 ## 功能
 
