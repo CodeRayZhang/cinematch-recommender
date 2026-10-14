@@ -66,7 +66,7 @@ java -jar /absolute/path/to/cinematch.jar \
   --app.recommender.activate=true
 ```
 
-训练结束后后续启动应移除这两个参数，否则每次启动会创建新任务。`activate` 默认 false；只有明确设置 true 才在训练成功后启用。数据未准备好会导致该启动命令失败，普通启动不依赖外部训练数据。
+训练结束后后续启动应移除这两个参数，否则每次启动会创建新任务。`activate` 默认 false；只有明确设置 true 才在训练成功后启用。训练源清单缺失会导致该启动命令失败；后台校验或训练失败会记录 FAILED，普通启动不依赖外部训练数据。
 
 ## 4. 数据与持久化
 
@@ -78,7 +78,7 @@ recommender/
   runs/<model-uuid>/           # 该次实际评分、映射、摘要和校验值
 ```
 
-模型权重与映射保存在数据库 `recommendation_models`，活动版本在 `recommendation_model_state`。重启会重新加载活动模型；中断中的训练任务标记 FAILED，需重新创建。已创建快照采用 CREATE_NEW 写入，删除后台版本不自动删除快照；清理前确认不再需要复现，限制目录访问并与数据库一起备份。数据库恢复后只要电影身份仍匹配即可继续服务，推理不依赖 datasets 目录。
+模型权重与映射保存在数据库 `recommendation_models`，活动版本在 `recommendation_model_state`。重启会重新加载活动模型；中断中的训练任务标记 FAILED，需重新创建。已创建快照采用 CREATE_NEW 写入，删除后台版本不自动删除快照；清理前确认不再需要复现，限制目录访问并与数据库一起备份。数据库恢复后只要电影身份仍匹配即可继续服务，推理不依赖 datasets 目录。runs 记录实际训练输入用于审计和程序化复现，含站内负 ID 命名空间时不能直接作为外部数据集导入；后台重新训练仍从已准备的 datasets 或本站评分读取。
 
 Compose 已加入 `model-data` 命名卷，保留训练源和快照。外部数据可在准备后导入卷：
 
