@@ -18,9 +18,9 @@
 
 ### B. MovieLens 历史评分
 
-历史评分保持独立用户命名空间，不创建本站账号，也不写入本站 reviews。当前作者本机采用旧项目已有 MovieLens 1M：1,000,209 条评分、6,040 位匿名用户、3,706 部被评分电影；与 923 部现有电影严格对应到 90 部。这个覆盖率是本机快照结果，不代表新克隆仓库自带这些数据。
+历史评分保持独立用户命名空间，不创建本站账号，也不写入本站 reviews。当前作者本机采用旧项目已有 MovieLens 1M：1,000,209 条评分、6,040 位匿名用户、3,706 部被评分电影；与 923 部现有电影严格对应到 90 部。这个覆盖率是本机训练结果；仓库自带 923 部电影目录，但不附历史评分和已训练模型。
 
-先按 [电影数据来源](data-sources.md) 准备 `ready-catalog.json`、`wikidata-links.json` 并导入对应片库。再下载官方链接表（原始数据不提交到 Git）：
+先用 `bash scripts/dev.sh --catalog` 启动仓库片库，并按 [电影数据来源](data-sources.md) 的获取步骤准备 `.cache/catalog/wikidata-links.json`（`python3 scripts/fetch_movie_sources.py`）。电影元数据可以直接使用仓库的 `data/catalog/movies.json`，无需重新下载海报。再下载官方链接表（原始数据不提交到 Git）：
 
 ```sh
 mkdir -p .cache/recommender
@@ -37,7 +37,7 @@ python3 scripts/prepare_recommender.py \
   --movielens "$MOVIELENS_DIRECTORY" \
   --links .cache/recommender \
   --wikidata .cache/catalog/wikidata-links.json \
-  --catalog-metadata .cache/catalog/ready-catalog.json \
+  --catalog-metadata data/catalog/movies.json \
   --output backend/.data/recommender/datasets/movielens-1m \
   --name movielens-1m
 ```
