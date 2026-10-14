@@ -1,0 +1,8 @@
+# Optional bundled catalog: docker compose -f compose.yml -f compose.catalog.yml up --build -d
+# Same target replaces the default external poster mount when Compose merges files.
+services:
+  app:
+    volumes:
+      - ./data/catalog/movies.json:/app/catalog-import.json:ro
+      - ./data/catalog/posters:/app/.data/catalog-posters:ro
+    command: ["--app.catalog.import-file=/app/catalog-import.json"]

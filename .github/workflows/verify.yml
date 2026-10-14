@@ -1,9 +1,9 @@
 name: Verify CineMatch
 on:
   push:
-    paths: ["frontend/**", "backend/**", "scripts/**", "docs/**", "README.md", "compose.yml", "Dockerfile", ".github/workflows/verify.yml"]
+    paths: ["frontend/**", "backend/**", "scripts/**", "docs/**", "data/**", "README.md", "compose*.yml", "Dockerfile", ".github/workflows/verify.yml"]
   pull_request:
-    paths: ["frontend/**", "backend/**", "scripts/**", "docs/**", "README.md", "compose.yml", "Dockerfile", ".github/workflows/verify.yml"]
+    paths: ["frontend/**", "backend/**", "scripts/**", "docs/**", "data/**", "README.md", "compose*.yml", "Dockerfile", ".github/workflows/verify.yml"]
 permissions:
   contents: read
 jobs:
@@ -24,6 +24,7 @@ jobs:
           cache: maven
           cache-dependency-path: backend/pom.xml
       - run: python3 scripts/generate_architecture.py --check
+      - run: python3 scripts/check_catalog_bundle.py
       - run: npm ci
         working-directory: frontend
       - run: npm run format:check && npm run build
@@ -54,6 +55,10 @@ jobs:
           docker compose -p cinematch-ci restart db
           docker compose -p cinematch-ci up -d app
           python3 scripts/verify_container.py after
+          docker compose -p cinematch-ci -f compose.yml -f compose.catalog.yml up -d --force-recreate app
+          python3 scripts/check_catalog_bundle.py --base-url http://127.0.0.1:8080 --wait-seconds 120
+          docker compose -p cinematch-ci -f compose.yml -f compose.catalog.yml restart app
+          python3 scripts/check_catalog_bundle.py --base-url http://127.0.0.1:8080 --wait-seconds 120
       - name: Upload browser reports and test results
         if: always()
         uses: actions/upload-artifact@v7.0.2

@@ -15,7 +15,7 @@ CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发�
 | 当前算法、信号权重、冷启动、探索模式及评估复现 | [推荐算法与评估指南](docs/recommendation.md) |
 | 模型数据准备、ALS 训练、启用、回退和备份 | [可训练推荐模型操作指南](docs/recommendation-models.md) |
 | 推荐效果、对照实验与局限 | [ALS 与融合推荐评估](docs/recommendation-model-evaluation.md) · [基础混合推荐评估](docs/recommendation-evaluation.md) · [探索模式评估](docs/recommendation-discovery-evaluation.md) · [本站推荐观察与评估口径](docs/recommendation-observation.md) |
-| 公开目录获取、资料校验与来源 | [电影数据来源](docs/data-sources.md) |
+| 仓库自带 923 部电影、海报、导入与资料来源 | [电影数据与使用说明](docs/data-sources.md) · [片库文件](data/catalog/movies.json) |
 | 模块边界、图表维护与已完成验收 | [架构说明](docs/architecture.md) · [图表维护](docs/diagrams/README.md) · [验收记录](docs/verification.md) |
 
 ## 功能
@@ -30,7 +30,7 @@ CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发�
 - 管理：电影增删改查、首页甄选、用户概览、首页专题、ALS 训练进度、模型版本启用 / 回退 / 导出，以及按版本 / 模式 / 用户分组的推荐观察。无默认管理员账号。
 - 数据：Flyway 数据库迁移；本地 H2 文件库；MySQL 8.4 与 Docker Compose 配套；新增合集、专题、推荐观察与模型版本迁移。
 
-仓库自带 18 部界面种子样例，也提供公开电影资料获取、ID 校验、海报缓存与事务导入工具，见 [公开电影目录](docs/data-sources.md)。页面区分演示评分、外部数据集历史参考分和个人评分；不会将历史快照冒充实时评分。
+仓库已收录当前本地片库：**923 部电影资料 + 905 张扩充海报**，另复用前端已有的种子图片。`data/catalog/` 约 45 MiB，包含来源和 SHA-256 清单，克隆后无需重新抓取电影数据；用下方 `--catalog` 命令导入。页面区分种子演示分、外部数据集的历史参考分和个人评分；923 部目录的参考分来自 2025 年快照。详见 [电影数据与使用说明](docs/data-sources.md)。
 
 ## 推荐实验室
 
@@ -72,13 +72,13 @@ Vue 单页应用与 Spring Boot API 组成一个可独立运行的应用，生�
 
 ## 快速开始
 
-在仓库根目录执行，需要 Node.js 22.12+、Java 21、Maven 3.9+：
+在仓库根目录执行，需要 Node.js 22.12+、Java 21、Maven 3.9+ 和 Python 3.9+：
 
 ```sh
-bash scripts/dev.sh
+bash scripts/dev.sh --catalog
 ```
 
-首次自动安装前端依赖。打开 `http://127.0.0.1:5173`，后端监听 `http://127.0.0.1:8080`，按 Ctrl+C 停止。H2 数据默认保存在 `backend/.data/`；普通账号在页面注册，管理员初始化见 [部署指南](docs/deployment.md#5-初始化管理员)。
+首次校验仓库片库、自动安装前端依赖，并事务导入 923 部电影。重复启动按来源匹配更新，保留电影 ID 和个人记录，跳过后台人工编辑的条目。打开 `http://127.0.0.1:5173`，后端监听 `http://127.0.0.1:8080`，按 Ctrl+C 停止。H2 数据默认保存在 `backend/.data/`；普通账号在页面注册，管理员初始化见 [部署指南](docs/deployment.md#5-初始化管理员)。
 
 完整页面与 API 可打包为一个 JAR。停止开发服务后，在仓库根目录执行：
 
@@ -88,17 +88,24 @@ mkdir -p .cache/runtime
 release_id="$(date +%Y%m%d-%H%M%S)"
 cp backend/target/cinematch-2.0.0-SNAPSHOT.jar ".cache/runtime/cinematch-${release_id}.jar"
 cd backend
-java -jar "../.cache/runtime/cinematch-${release_id}.jar"
+java -jar "../.cache/runtime/cinematch-${release_id}.jar" \
+  --app.catalog.import-file=../data/catalog/movies.json \
+  --app.catalog.poster-directory=../data/catalog/posters
 ```
 
 打开 `http://127.0.0.1:8080`。从 `backend/` 启动以沿用开发数据；每次使用新的运行 JAR 文件名。其他部署方式、海报目录挂载及故障排查见 [详细部署与运行指南](docs/deployment.md)，初次体验可按 [页面操作步骤](docs/usage.md) 执行。
+
+不带 `--catalog` 的开发启动保留轻量模式：空库只有 18 部种子样例。已导入数据会留在数据库中；使用仓库海报时，每次启动仍需配置对应图片目录。JAR 不内嵌扩充数据，部署时同时保留 `data/catalog/`。
+
+Docker / MySQL 使用同一份片库：按 [部署指南](docs/deployment.md#8-docker-compose-与-mysql) 配好 `.env` 后执行 `docker compose -f compose.yml -f compose.catalog.yml up --build -d`。片库不包含账号、个人评分、片单、数据库文件或已训练模型；模型训练与启用按 [模型操作指南](docs/recommendation-models.md) 执行。
 
 ## 目录
 
 ```text
 frontend/        Vue 页面、组件、独立状态模块、样式与桌面 / 手机 E2E
 backend/         Spring Boot API、权限、推荐、Flyway 和测试
-scripts/         开发、构建及目录导入工具
+data/catalog/    923 部电影、905 张海报、来源与文件校验清单
+scripts/         开发、构建、片库校验及目录导入工具
 docs/            部署操作、架构图、算法评估、数据来源与验收记录
 ```
 
@@ -106,4 +113,4 @@ docs/            部署操作、架构图、算法评估、数据来源与验收
 
 ## License
 
-Code is available under the [MIT License](LICENSE). Movie artwork remains the property of its respective rights holders; see [artwork sources](docs/artwork.md).
+Code is available under the [MIT License](LICENSE). Third-party movie metadata and artwork are not covered by this code license; see [catalog attribution](data/catalog/NOTICE.md) and [artwork sources](docs/artwork.md).

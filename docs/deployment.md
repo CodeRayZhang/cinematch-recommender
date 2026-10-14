@@ -12,11 +12,11 @@
 | 单个 JAR | 完整预览、个人服务器运行 | `http://127.0.0.1:8080` | 本文统一从 `backend/` 启动，沿用开发库 | 已本地验证 |
 | Docker Compose + MySQL | 隔离应用与数据库环境 | `http://127.0.0.1:8080` | MySQL 命名卷；默认只读挂载外部海报 | CI 执行真实容器验收，结果见验收记录 |
 
-同一 H2 文件库只运行一个应用进程。切换开发模式和 JAR 前，先在原终端按 `Ctrl+C` 停止。初次启动由 Flyway 建表并写入 **18 部种子电影**；此前本机扩充到 923 部的目录和海报不随仓库分发。
+同一 H2 文件库只运行一个应用进程。切换开发模式和 JAR 前，先在原终端按 `Ctrl+C` 停止。初次启动由 Flyway 建表并写入 **18 部种子电影**；仓库另外携带 **923 部电影的完整资料快照和 905 张扩充海报**，使用下方带片库的命令导入。
 
 ## 2. 准备环境与代码
 
-本机开发 / 打包需要 Node.js 22.12+（项目 CI 使用 Node 22）、npm、JDK 21、Maven 3.9+ 和 Git。数据获取、导入与图表检查另外需要 Python 3。仅走容器方式时，宿主机准备 Git、Docker Engine / Desktop 和 Compose v2 即可。
+本机开发 / 打包需要 Node.js 22.12+（项目 CI 使用 Node 22）、npm、JDK 21、Maven 3.9+ 和 Git。数据获取、片库校验与图表检查另外需要 Python 3.9+。仅走容器方式时，宿主机准备 Git、Docker Engine / Desktop 和 Compose v2 即可。
 
 ```sh
 git clone git@github.com:CodeRayZhang/cinematch-recommender.git
@@ -36,15 +36,20 @@ mvn -version
 在仓库根目录执行：
 
 ```sh
-bash scripts/dev.sh
+bash scripts/dev.sh --catalog
 ```
+
+脚本首先校验 `data/catalog/`，使用仓库片库与海报；重复导入保留电影身份及个人记录，跳过人工编辑条目。去掉 `--catalog` 时仅启动应用，不导入快照，空库仍为 18 部种子电影。使用仓库图片时每次启动继续带该参数，或单独配置 `APP_CATALOG_POSTER_DIRECTORY`。
 
 脚本首次自动安装前端锁文件依赖，同时启动后端与 Vite。等待后端出现启动完成日志、前端显示访问地址后，打开 `http://127.0.0.1:5173`。后端监听 `127.0.0.1:8080`，前端将 `/api` 和 `/images/catalog` 请求代理过去。按 `Ctrl+C` 停止两端。
 
 如果需要分别查看日志，使用两个终端，均先进入仓库根目录：
 
 ```sh
-# 终端 A：后端
+# 终端 A：后端，使用仓库片库
+python3 scripts/check_catalog_bundle.py
+export APP_CATALOG_IMPORT_FILE="$PWD/data/catalog/movies.json"
+export APP_CATALOG_POSTER_DIRECTORY="$PWD/data/catalog/posters"
 bash scripts/mvn.sh spring-boot:run
 ```
 
@@ -75,10 +80,12 @@ mkdir -p .cache/runtime
 release_id="$(date +%Y%m%d-%H%M%S)"
 cp backend/target/cinematch-2.0.0-SNAPSHOT.jar ".cache/runtime/cinematch-${release_id}.jar"
 cd backend
-java -jar "../.cache/runtime/cinematch-${release_id}.jar"
+java -jar "../.cache/runtime/cinematch-${release_id}.jar" \
+  --app.catalog.import-file=../data/catalog/movies.json \
+  --app.catalog.poster-directory=../data/catalog/posters
 ```
 
-访问 `http://127.0.0.1:8080`。这个模式不再需要 Vite、Node 或独立前端服务；运行机器只需 Java 21 和数据目录。前台执行时日志输出到当前终端，`Ctrl+C` 正常停止。服务器持续运行可交给 systemd 等进程管理器，保持工作目录、环境变量和数据目录权限一致；仓库目前没有现成的 systemd 单元文件。
+访问 `http://127.0.0.1:8080`。这个模式不再需要 Vite、Node 或独立前端服务；运行机器只需 Java 21 和数据目录；扩充资料与海报未内嵌 JAR，需同时保留 `data/catalog/` 或指定等价的绝对路径。导入后可以去掉 `import-file` 参数，每次启动仍需保留 `poster-directory` 参数。前台执行时日志输出到当前终端，`Ctrl+C` 正常停止。服务器持续运行可交给 systemd 等进程管理器，保持工作目录、环境变量和数据目录权限一致；仓库目前没有现成的 systemd 单元文件。
 
 每次发布使用新的运行 JAR 文件名，不要覆盖正在运行的文件，也不要直接运行下一次 `clean` 会删除的构建产物。`.cache/runtime` 只是本机副本，正式服务器可使用自己的版本目录。
 
@@ -139,6 +146,12 @@ java -jar ../.cache/runtime/cinematch-RELEASE.jar \
 数据库文件不能放在公开静态目录中；海报目录只包含可公开访问的图片。应用和 Flyway 自动创建 / 迁移表，不必手工执行旧项目 SQL。
 
 ## 7. 扩充电影目录
+
+### 使用仓库内的 923 部电影
+
+无需访问上游数据服务。开发模式直接使用第 3 节的 `bash scripts/dev.sh --catalog`；JAR 使用第 4 节的两项参数。先在仓库根目录运行 `python3 scripts/check_catalog_bundle.py`，再停止占用同一数据库的旧进程、备份并启动。日志应出现 `Catalog import complete`：全新种子库首次新增 905、更新 18；未编辑的完整库再次导入新增 0、更新 923。
+
+快照只含电影资料；账号、片单、个人评分与已训练模型不随此步骤恢复。导入不会删除其他电影，也不会覆盖后台人工编辑的条目；已有库的总数可能多于或少于 923。每个电影的历史参考分、来源 URL、快照年份和图片来源都保存在仓库中，详见 [数据来源](data-sources.md)。
 
 ### 7.1 获取公开目录并事务导入
 
@@ -204,33 +217,17 @@ docker compose logs --tail=100 app
 
 停止使用 `docker compose down`；再次运行使用 `docker compose up -d`。普通 `down` 保留 `movie-data` 命名卷，`down -v` 会删除数据库卷，不能作为常规停止或升级命令。已有 MySQL 卷不会因修改 `.env` 自动修改数据库密码；需要先在数据库中执行账号密码变更并同步应用配置。
 
-默认镜像只有种子目录，`.data/` 不进入镜像。Compose 已只读挂载 `./backend/.data/catalog-posters` 到 `/app/.data/catalog-posters`；可在 `.env` 设置 `CATALOG_POSTER_DIRECTORY` 更换宿主机目录。需要扩充目录时，先在宿主机按 7.1 生成资料，再创建仅挂载导入 JSON 的 `compose.catalog.yml`（本地配置，不包含密码）：
-
-```yaml
-services:
-  app:
-    volumes:
-      - ./.cache/catalog:/app/catalog-import:ro
-```
-
-另建只用于导入的 `compose.import.yml`：
-
-```yaml
-services:
-  app:
-    command: ["--app.catalog.import-file=/app/catalog-import/ready-catalog.json"]
-```
-
-先备份 MySQL，再用两个覆盖文件启动一次；确认导入日志后，去掉导入覆盖文件并重建应用容器，**保留海报挂载**：
+默认镜像只有种子目录，`.data/` 和 `data/` 不进入镜像。仓库提供可选的 `compose.catalog.yml`：只读挂载已提交的 JSON 和海报，并显式启用启动导入。按上方设置好 `.env`、备份已有 MySQL 后，运行：
 
 ```sh
-docker compose -f compose.yml -f compose.catalog.yml -f compose.import.yml up -d app
-docker compose -f compose.yml -f compose.catalog.yml -f compose.import.yml logs --tail=100 app
-# 确认导入完成后执行
-docker compose -f compose.yml -f compose.catalog.yml up -d --force-recreate app
+docker compose -f compose.yml -f compose.catalog.yml config --quiet
+docker compose -f compose.yml -f compose.catalog.yml up --build -d
+docker compose -f compose.yml -f compose.catalog.yml logs --tail=100 app
 ```
 
-CI 验证默认海报挂载；此可选的外部目录批量导入覆盖流程没有纳入容器验收。宿主机目录必须存在且容器用户可读。导入完成后可移除 JSON 挂载覆盖文件；默认海报挂载由 `compose.yml` 保持。
+新库得到 923 部电影。再次 `up` / `restart` 时始终使用相同的两个 `-f` 参数，确保海报挂载一致；重复启动导入幂等，保留电影身份与用户交互，并跳过人工编辑电影。停止使用 `docker compose -f compose.yml -f compose.catalog.yml down`，不要加 `-v`。CI 在默认容器持久化验收之后，使用此覆盖文件导入、逐字段核对 923 部电影及所有图片，再重启验证重复导入。
+
+使用自己重新获取的资料时，沿用 `compose.yml` 的默认海报挂载（可在 `.env` 配置 `CATALOG_POSTER_DIRECTORY`），另建覆盖文件将 `.cache/catalog/ready-catalog.json` 只读挂到 `/app/catalog-import.json`，并设置同样的导入参数。不要覆盖仓库内的 `compose.catalog.yml`。
 
 已有独立 MySQL 服务也可直接供 JAR 使用：将 `DATABASE_URL` 设为 `jdbc:mysql://数据库主机:3306/cinematch?characterEncoding=utf8&connectionTimeZone=UTC`，配置用户名、密码，预先创建独立空库并授予应用用户迁移所需权限，再启动 JAR。不要使用旧项目 schema。H2 与 MySQL 之间目前没有一键数据迁移脚本，切换连接并不会搬迁已有账号、片单和评分。
 

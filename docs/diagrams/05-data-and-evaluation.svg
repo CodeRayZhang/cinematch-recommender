@@ -33,9 +33,9 @@
   <polygon points="420.00,652.00 414.50,640.00 425.50,640.00" fill="#426955" />
   <rect x="64" y="652" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="86" y="677" width="5" height="25" rx="2" fill="#426955" />
-  <text x="106" y="698" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">生成导入文件与本地图片</text>
-  <text x="88" y="736" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">ready-catalog.json + preparation-report.json</text>
-  <text x="88" y="766" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">catalog-posters/ 单独提供静态图片</text>
+  <text x="106" y="698" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">生成目录与版本化快照</text>
+  <text x="88" y="736" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">data/catalog/：movies.json + manifest.json</text>
+  <text x="88" y="766" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">905 张扩充海报；SHA-256 与来源 URL</text>
   <polyline points="420,792 420,830" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="420.00,830.00 414.50,818.00 425.50,818.00" fill="#426955" />
   <rect x="64" y="830" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
@@ -49,7 +49,7 @@
   <rect x="86" y="1033" width="5" height="25" rx="2" fill="#426955" />
   <text x="106" y="1054" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">应用片库</text>
   <text x="88" y="1092" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">H2 / 可选 MySQL 保存电影及来源字段</text>
-  <text x="88" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">本地已扩充 923 部；仓库自带 18 部种子样例</text>
+  <text x="88" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">仓库附 923 部快照；Flyway 内置 18 部种子</text>
   <polyline points="1180,258 1180,296" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="1180.00,296.00 1174.50,284.00 1185.50,284.00" fill="#d66b4e" />
   <rect x="824" y="296" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
@@ -86,7 +86,7 @@
   <text x="848" y="1092" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">JSON 指标 + Markdown 解释，可重复运行</text>
   <text x="848" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">采用 ALS 融合；纯 ALS 不采用；热门榜仍更高</text>
   <rect x="64" y="1188" width="1472" height="68" rx="12" fill="#1b3028" />
-  <text x="800" y="1231" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="600">来源快照、完整片库与海报仅保存在本地；评估不写入应用账号、片单或评分。</text>
+  <text x="800" y="1231" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="600">923 部资料与引用海报随仓库维护；原始训练源、账号、片单与个人评分留在本地。</text>
   <rect x="64" y="1290" width="1472" height="170" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="86" y="1315" width="5" height="25" rx="2" fill="#426955" />
   <text x="106" y="1336" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#426955" text-anchor="start" font-weight="600">C / 本站推荐观察 · 独立于离线评估</text>

@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 project_root="$(cd "$(dirname "$0")/.." && pwd)"
+if [ "$#" -gt 1 ] || { [ "$#" -eq 1 ] && [ "$1" != '--catalog' ]; }; then
+  echo 'Usage: bash scripts/dev.sh [--catalog]' >&2
+  exit 2
+fi
+if [ "${1:-}" = '--catalog' ]; then
+  python3 "$project_root/scripts/check_catalog_bundle.py"
+  export APP_CATALOG_IMPORT_FILE="$project_root/data/catalog/movies.json"
+  export APP_CATALOG_POSTER_DIRECTORY="$project_root/data/catalog/posters"
+fi
 if [ ! -d "$project_root/frontend/node_modules" ]; then npm --prefix "$project_root/frontend" ci; fi
 backend_pid=''
 frontend_pid=''
