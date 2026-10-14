@@ -11,7 +11,9 @@ public interface MovieMapper {
       " WHERE (#{q} = '' OR LOWER(title) LIKE CONCAT('%', LOWER(#{q}), '%') OR"
           + " LOWER(original_title) LIKE CONCAT('%', LOWER(#{q}), '%') OR LOWER(director) LIKE"
           + " CONCAT('%', LOWER(#{q}), '%')) AND (#{genre} = '' OR CONCAT(',', genres, ',') LIKE"
-          + " CONCAT('%,', #{genre}, ',%'))";
+          + " CONCAT('%,', #{genre}, ',%')) AND (#{yearFrom}=0 OR release_year >= #{yearFrom}) AND"
+          + " (#{yearTo}=0 OR release_year &lt;= #{yearTo}) AND (#{maxRuntime}=0 OR (runtime>0 AND"
+          + " runtime &lt;= #{maxRuntime}))";
 
   @Select(
       "<script>SELECT "
@@ -22,20 +24,39 @@ public interface MovieMapper {
           + " ASC</when><when test=\"sort == 'recent'\"> ORDER BY release_year DESC, rating DESC,"
           + " id ASC</when><otherwise> ORDER BY rating_count DESC, rating DESC, id"
           + " ASC</otherwise></choose> LIMIT #{size} OFFSET #{offset}</script>")
-  List<Movie> search(
+  List<Movie> searchFiltered(
       @Param("q") String q,
       @Param("genre") String genre,
       @Param("sort") String sort,
       @Param("size") int size,
-      @Param("offset") int offset);
+      @Param("offset") int offset,
+      @Param("yearFrom") int yearFrom,
+      @Param("yearTo") int yearTo,
+      @Param("maxRuntime") int maxRuntime);
 
-  @Select("SELECT COUNT(*) FROM movies" + FILTER)
-  long count(@Param("q") String q, @Param("genre") String genre);
+  default List<Movie> search(String q, String genre, String sort, int size, int offset) {
+    return searchFiltered(q, genre, sort, size, offset, 0, 0, 0);
+  }
+
+  @Select("<script>SELECT COUNT(*) FROM movies" + FILTER + "</script>")
+  long countFiltered(
+      @Param("q") String q,
+      @Param("genre") String genre,
+      @Param("yearFrom") int yearFrom,
+      @Param("yearTo") int yearTo,
+      @Param("maxRuntime") int maxRuntime);
+
+  default long count(String q, String genre) {
+    return countFiltered(q, genre, 0, 0, 0);
+  }
 
   @Select("SELECT " + COLUMNS + " FROM movies WHERE id = #{id}")
   Movie find(long id);
 
-  @Select("SELECT " + COLUMNS + " FROM movies ORDER BY featured DESC, rating_count DESC LIMIT 5000")
+  @Select(
+      "SELECT "
+          + COLUMNS
+          + " FROM movies ORDER BY featured DESC, rating_count DESC, id ASC LIMIT 5000")
   List<Movie> candidates();
 
   @Select("SELECT " + COLUMNS + " FROM movies WHERE featured = TRUE ORDER BY id LIMIT 3")

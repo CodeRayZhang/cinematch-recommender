@@ -6,14 +6,15 @@ import {
   user,
   ready,
   authOpen,
-  library,
+  libraryRevision,
   loadSession,
   sessionError,
   notify,
 } from "../state";
-import type { Movie, Profile } from "../types";
+import type { Movie, Profile, LibraryPage, LibrarySummary } from "../types";
 import Icon from "../components/Icon.vue";
 import ReviewEditor from "../components/ReviewEditor.vue";
+import ObservationSettings from "../components/ObservationSettings.vue";
 const genres = MOVIE_GENRES;
 const form = reactive({
   displayName: "",
@@ -26,34 +27,86 @@ const profile = ref<Profile>(),
   busy = ref(false),
   error = ref(""),
   editing = ref<Movie | null>(null),
-  showHidden = ref(false),
-  reviewLimit = ref(6);
-const watched = computed(() =>
-  library.movies.filter((m) =>
-    library.entries.some((e) => e.movieId === m.id && e.status === "WATCHED"),
-  ),
-);
-const minutes = computed(() =>
-  watched.value.reduce((sum, m) => sum + m.runtime, 0),
-);
-const average = computed(() =>
-  library.reviews.length
-    ? (
-        library.reviews.reduce((sum, r) => sum + r.stars, 0) /
-        library.reviews.length
-      ).toFixed(1)
-    : "—",
-);
-const topGenres = computed(() => {
-  const counts = new Map<string, number>();
-  watched.value.forEach((m) =>
-    m.genres.split(",").forEach((g) => counts.set(g, (counts.get(g) || 0) + 1)),
-  );
-  return [...counts]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, 5);
+  showHidden = ref(false);
+const summary = ref<LibrarySummary>({
+  watching: 0,
+  watched: 0,
+  rated: 0,
+  minutes: 0,
+  average: null,
+  genres: [],
 });
-const movieMap = computed(() => new Map(library.movies.map((m) => [m.id, m])));
+const reviewPage = ref(1),
+  archive = ref<LibraryPage>({ items: [], total: 0, page: 1, size: 6 });
+const minutes = computed(() => summary.value.minutes);
+const average = computed(() =>
+  summary.value.average === null ? "—" : summary.value.average.toFixed(1),
+);
+const topGenres = computed(() =>
+  summary.value.genres.map((g) => [g.name, g.count] as const),
+);
+const movieMap = computed(
+  () => new Map(archive.value.items.map((row) => [row.movie.id, row.movie])),
+);
+const archiveReviews = computed(() =>
+  archive.value.items.map((row) => ({
+    movieId: row.movie.id,
+    stars: row.stars || 0,
+    body: row.body || "",
+  })),
+);
+let archiveRequest = 0;
+async function loadArchive() {
+  const id = ++archiveRequest;
+  if (!user.value) {
+    archive.value = { items: [], total: 0, page: 1, size: 6 };
+    summary.value = {
+      watching: 0,
+      watched: 0,
+      rated: 0,
+      minutes: 0,
+      average: null,
+      genres: [],
+    };
+    return;
+  }
+  try {
+    const [s, a] = await Promise.all([
+      api<LibrarySummary>("/me/library/summary"),
+      api<LibraryPage>(
+        `/me/library/page?tab=RATED&page=${reviewPage.value}&size=6`,
+      ),
+    ]);
+    if (id === archiveRequest) {
+      summary.value = s;
+      archive.value = a;
+      const max = Math.max(1, Math.ceil(a.total / 6));
+      if (reviewPage.value > max) reviewPage.value = max;
+    }
+  } catch (e) {
+    if (id === archiveRequest && (e as Error).name !== "AbortError")
+      error.value = (e as Error).message;
+  }
+}
+watch([libraryRevision, reviewPage], () => void loadArchive(), {
+  immediate: true,
+});
+watch(
+  () => user.value?.id,
+  () => {
+    reviewPage.value = 1;
+    archiveRequest++;
+    archive.value = { items: [], total: 0, page: 1, size: 6 };
+    summary.value = {
+      watching: 0,
+      watched: 0,
+      rated: 0,
+      minutes: 0,
+      average: null,
+      genres: [],
+    };
+  },
+);
 let request = 0;
 async function load() {
   const id = ++request;
@@ -159,14 +212,11 @@ async function restore(id: number) {
       <div class="profile-stats">
         <div>
           <span>看过的电影</span
-          ><strong>{{ watched.length }}<small>部</small></strong>
+          ><strong>{{ summary.watched }}<small>部</small></strong>
         </div>
         <div>
           <span>等待观看</span
-          ><strong
-            >{{ library.entries.filter((e) => e.status === "WATCHLIST").length
-            }}<small>部</small></strong
-          >
+          ><strong>{{ summary.watching }}<small>部</small></strong>
         </div>
         <div>
           <span>记录中的观影时长</span
@@ -251,7 +301,7 @@ async function restore(id: number) {
                 </div>
                 <progress
                   :value="count"
-                  :max="watched.length"
+                  :max="summary.watched"
                   :aria-label="`${genre}电影占比`"
                 />
               </div>
@@ -301,27 +351,25 @@ async function restore(id: number) {
           </section>
         </div>
       </div>
+      <ObservationSettings />
       <section class="profile-reviews">
         <div class="section-heading">
           <div>
             <p class="eyebrow">THOUGHTS AFTER THE CREDITS</p>
             <h2>
               我的评分与短评
-              <span class="muted small">{{ library.reviews.length }} 条</span>
+              <span class="muted small">{{ summary.rated }} 条</span>
             </h2>
           </div>
           <RouterLink to="/library" class="text-link"
             >打开片单<Icon name="ArrowUpRight" :size="16"
           /></RouterLink>
         </div>
-        <p v-if="!library.reviews.length" class="panel-empty">
+        <p v-if="!summary.rated" class="panel-empty">
           电影散场之后，你的感受值得留下。
         </p>
         <div class="review-notes">
-          <article
-            v-for="review in library.reviews.slice(0, reviewLimit)"
-            :key="review.movieId"
-          >
+          <article v-for="review in archiveReviews" :key="review.movieId">
             <div>
               <RouterLink :to="`/movie/${review.movieId}`"
                 ><h3>
@@ -338,13 +386,23 @@ async function restore(id: number) {
             </button>
           </article>
         </div>
-        <button
-          v-if="reviewLimit < library.reviews.length"
-          class="button secondary"
-          @click="reviewLimit += 6"
-        >
-          更多观影记录
-        </button>
+        <div v-if="archive.total > 6" class="pagination">
+          <span
+            >第 {{ reviewPage }} / {{ Math.ceil(archive.total / 6) }} 页</span
+          ><button
+            class="button secondary compact"
+            :disabled="reviewPage === 1"
+            @click="reviewPage--"
+          >
+            上一页</button
+          ><button
+            class="button secondary compact"
+            :disabled="reviewPage >= Math.ceil(archive.total / 6)"
+            @click="reviewPage++"
+          >
+            下一页
+          </button>
+        </div>
       </section>
     </template>
     <ReviewEditor :movie="editing" @close="editing = null" />

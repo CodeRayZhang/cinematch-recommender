@@ -15,11 +15,17 @@ public class LibraryController {
   private final LibraryMapper library;
   private final AccountMapper accounts;
   private final MovieMapper movies;
+  private final RecommendationObservation observations;
 
-  public LibraryController(LibraryMapper library, AccountMapper accounts, MovieMapper movies) {
+  public LibraryController(
+      LibraryMapper library,
+      AccountMapper accounts,
+      MovieMapper movies,
+      RecommendationObservation observations) {
     this.library = library;
     this.accounts = accounts;
     this.movies = movies;
+    this.observations = observations;
   }
 
   @GetMapping("/me/library")
@@ -35,10 +41,13 @@ public class LibraryController {
   }
 
   @PutMapping("/me/library/{movieId}")
+  @Transactional
   public Map<String, String> save(
       Principal user, @PathVariable long movieId, @Valid @RequestBody Status input) {
     MovieController.require(movies, movieId);
-    library.save(accounts.findByUsername(user.getName()).id(), movieId, input.status());
+    long userId = accounts.findByUsername(user.getName()).id();
+    library.save(userId, movieId, input.status());
+    observations.attribute(userId, movieId, "saved", null);
     return Map.of("message", "片单已更新");
   }
 
@@ -57,9 +66,29 @@ public class LibraryController {
     long userId = accounts.findByUsername(user.getName()).id();
     for (long id : ids) {
       if (input.action().equals("REMOVE")) library.remove(userId, id);
-      else library.save(userId, id, input.action());
+      else {
+        library.save(userId, id, input.action());
+        observations.attribute(userId, id, "saved", null);
+      }
     }
     return Map.of("message", "已更新 " + ids.size() + " 部电影");
+  }
+
+  public record RestoreEntry(
+      @Positive long movieId, @Pattern(regexp = "WATCHLIST|WATCHED") String status) {}
+
+  public record Restore(@NotEmpty @Size(max = 100) List<@NotNull @Valid RestoreEntry> entries) {}
+
+  @PutMapping("/me/library/restore")
+  @Transactional
+  public Map<String, String> restore(Principal user, @Valid @RequestBody Restore input) {
+    input.entries().forEach(entry -> MovieController.require(movies, entry.movieId()));
+    long id = accounts.findByUsername(user.getName()).id();
+    for (var entry : input.entries()) {
+      if (entry.status() == null) library.remove(id, entry.movieId());
+      else library.save(id, entry.movieId(), entry.status());
+    }
+    return Map.of("message", "片单已恢复");
   }
 
   @DeleteMapping("/me/reviews/{movieId}")
@@ -80,6 +109,7 @@ public class LibraryController {
     long id = accounts.findByUsername(user.getName()).id();
     library.review(id, movieId, input.stars(), input.body().strip());
     library.save(id, movieId, "WATCHED");
+    observations.attribute(id, movieId, "rated", input.stars());
     return Map.of("message", "已记录你的观影感受");
   }
 

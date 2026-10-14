@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import {
+  ArrowUp,
+  ArrowDown,
   ArrowUpRight,
   ArrowRight,
   ArrowLeft,
@@ -23,6 +25,8 @@ import {
   CheckCircle2,
 } from "@lucide/vue";
 const icons = {
+  ArrowUp,
+  ArrowDown,
   ArrowUpRight,
   ArrowRight,
   ArrowLeft,

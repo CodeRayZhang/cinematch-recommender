@@ -25,6 +25,9 @@ class ApiIntegrationTest {
   @LocalServerPort int port;
   @Autowired AccountMapper accounts;
   @Autowired PasswordEncoder passwords;
+  @Autowired com.cinematch.movie.RecommendationObservation observation;
+  @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+  @Autowired com.cinematch.movie.CatalogCache catalogCache;
   HttpClient client;
   final JsonMapper json = JsonMapper.builder().build();
 
@@ -187,6 +190,7 @@ class ApiIntegrationTest {
     input.put("posterUrl", "/images/placeholder.svg");
     input.put("backdropUrl", "/images/placeholder.svg");
     input.put("featured", false);
+    catalogCache.candidates();
     status(201, send("POST", "/admin/movies", input, true));
     long id =
         read(send("GET", "/movies?q=Integration%20Movie", null, false))
@@ -194,10 +198,15 @@ class ApiIntegrationTest {
             .get(0)
             .path("id")
             .asLong();
+    assertTrue(catalogCache.candidates().stream().anyMatch(m -> m.id() == id));
     input.put("title", "更新的电影");
     status(200, send("PUT", "/admin/movies/" + id, input, true));
     assertEquals("更新的电影", read(send("GET", "/movies/" + id, null, false)).path("title").asText());
+    assertTrue(
+        catalogCache.candidates().stream()
+            .anyMatch(m -> m.id() == id && m.title().equals("更新的电影")));
     status(200, send("DELETE", "/admin/movies/" + id, null, true));
+    assertFalse(catalogCache.candidates().stream().anyMatch(m -> m.id() == id));
     status(404, send("GET", "/movies/" + id, null, false));
   }
 
@@ -373,5 +382,294 @@ class ApiIntegrationTest {
             "exclude=" + String.join(",", Collections.nCopies(121, "1")),
             "genres=" + URLEncoder.encode("剧情,动画,科幻,爱情", java.nio.charset.StandardCharsets.UTF_8)))
       status(400, send("GET", "/recommendations?" + query, null, false));
+  }
+
+  @Test
+  void namedCollectionsArePrivateAtomicOrderedAndExportable() throws Exception {
+    String owner = newAccount("USER");
+    login(owner);
+    status(403, send("POST", "/me/collections", Map.of("name", "周末", "description", ""), false));
+    var created =
+        send(
+            "POST", "/me/collections", Map.of("name", " 周末电影 ", "description", " 给周末留两个小时 "), true);
+    status(201, created);
+    String id = read(created).path("id").asText();
+    String path = "/me/collections/" + id;
+    status(200, send("POST", path + "/movies", Map.of("movieIds", List.of(1, 2, 1)), true));
+    status(404, send("POST", path + "/movies", Map.of("movieIds", List.of(3, 99999999)), true));
+    var detail = read(send("GET", path + "?size=1", null, false));
+    assertEquals(2, detail.path("total").asInt());
+    assertEquals(1, detail.path("items").size());
+    assertEquals("周末电影", detail.path("collection").path("name").asText());
+    status(
+        400, send("PUT", path, Map.of("name", "周末电影", "description", "", "coverMovieId", 3), true));
+    status(
+        200, send("PUT", path, Map.of("name", "周末电影", "description", "", "coverMovieId", 2), true));
+    status(200, send("PUT", path + "/movies/2", Map.of("note", " 重看这一个场景 "), true));
+    status(200, send("POST", path + "/movies/2/move", Map.of("direction", "up"), true));
+    var exported = read(send("GET", path + "/export", null, false));
+    assertEquals("cinematch.collection.v1", exported.path("format").asText());
+    assertEquals(2, exported.path("items").get(0).path("movie").path("id").asLong());
+    assertEquals("重看这一个场景", exported.path("items").get(0).path("note").asText());
+    login(newAccount("USER"));
+    assertEquals(0, read(send("GET", "/me/collections", null, false)).size());
+    status(404, send("GET", path + "/export", null, false));
+    status(404, send("POST", path + "/movies", Map.of("movieIds", List.of(3)), true));
+    status(404, send("DELETE", path, null, true));
+    login(owner);
+    status(200, send("PUT", "/me/reviews/2", Map.of("stars", 5, "body", "独立保存的评分"), true));
+    status(200, send("DELETE", path + "/movies/2", null, true));
+    assertTrue(
+        read(send("GET", path, null, false)).path("collection").path("coverMovieId").isNull());
+    status(200, send("DELETE", path, null, true));
+    assertEquals(5, read(send("GET", "/me/reviews/2", null, false)).path("stars").asInt());
+    status(404, send("GET", path, null, false));
+  }
+
+  @Test
+  void libraryPagesAndSummaryPreserveRemovedRatingsAndUndoIsAtomic() throws Exception {
+    login(newAccount("USER"));
+    status(
+        200,
+        send(
+            "PUT",
+            "/me/library/batch",
+            Map.of("movieIds", List.of(1, 2, 3, 4), "action", "WATCHLIST"),
+            true));
+    status(200, send("PUT", "/me/reviews/1", Map.of("stars", 5, "body", "分页仍保留短评"), true));
+    status(200, send("PUT", "/me/reviews/2", Map.of("stars", 3, "body", ""), true));
+    status(200, send("DELETE", "/me/library/1", null, true));
+    var state = read(send("GET", "/me/library/state", null, false));
+    assertEquals(0, state.path("movies").size());
+    assertEquals(3, state.path("entries").size());
+    for (var review : state.path("reviews")) assertEquals("", review.path("body").asText());
+    var all = read(send("GET", "/me/library/page?size=1", null, false));
+    assertEquals(3, all.path("total").asLong());
+    assertEquals(1, all.path("items").size());
+    var rated = read(send("GET", "/me/library/page?tab=RATED&sort=rating&size=1", null, false));
+    assertEquals(2, rated.path("total").asLong());
+    assertEquals(1, rated.path("items").get(0).path("movie").path("id").asLong());
+    assertEquals("分页仍保留短评", rated.path("items").get(0).path("body").asText());
+    var summary = read(send("GET", "/me/library/summary", null, false));
+    assertEquals(2, summary.path("watching").asLong());
+    assertEquals(1, summary.path("watched").asLong());
+    assertEquals(4.0, summary.path("average").asDouble());
+    var entries = new ArrayList<Map<String, Object>>();
+    Map<String, Object> remove = new HashMap<>();
+    remove.put("movieId", 2);
+    remove.put("status", null);
+    entries.add(remove);
+    entries.add(Map.of("movieId", 3, "status", "WATCHED"));
+    entries.add(Map.of("movieId", 99999999, "status", "WATCHED"));
+    status(404, send("PUT", "/me/library/restore", Map.of("entries", entries), true));
+    assertEquals(3, read(send("GET", "/me/library/state", null, false)).path("entries").size());
+    entries.removeLast();
+    status(200, send("PUT", "/me/library/restore", Map.of("entries", entries), true));
+    assertEquals(2, read(send("GET", "/me/library/state", null, false)).path("entries").size());
+    status(400, send("GET", "/me/library/page?sort=invalid", null, false));
+    status(400, send("GET", "/me/library/page?size=49", null, false));
+    login(newAccount("USER"));
+    assertEquals(
+        0, read(send("GET", "/me/library/page?tab=RATED", null, false)).path("total").asLong());
+  }
+
+  @Test
+  void catalogCombinesGenreYearsAndRuntimeWithStablePaging() throws Exception {
+    var query = "/movies?yearFrom=1990&yearTo=2020&maxRuntime=120&size=2&sort=recent";
+    var first = read(send("GET", query, null, false));
+    assertTrue(first.path("total").asLong() > 2);
+    Set<Long> ids = new HashSet<>();
+    for (var movie : first.path("items")) {
+      ids.add(movie.path("id").asLong());
+      assertTrue(movie.path("releaseYear").asInt() >= 1990);
+      assertTrue(movie.path("releaseYear").asInt() <= 2020);
+      assertTrue(movie.path("runtime").asInt() <= 120);
+    }
+    for (var movie : read(send("GET", query + "&page=2", null, false)).path("items"))
+      assertFalse(ids.contains(movie.path("id").asLong()));
+    for (String invalid :
+        List.of(
+            "yearFrom=1800",
+            "yearTo=2101",
+            "yearFrom=2020&yearTo=1990",
+            "maxRuntime=121",
+            "genre=invalid")) status(400, send("GET", "/movies?" + invalid, null, false));
+  }
+
+  @Test
+  void topicsAreValidatedAndOnlyEnabledTopicsArePublic() throws Exception {
+    login(newAccount("USER"));
+    status(403, send("GET", "/admin/topics", null, false));
+    login(newAccount("ADMIN"));
+    Map<String, Object> input =
+        new HashMap<>(
+            Map.of(
+                "title",
+                "测试专题",
+                "description",
+                "组合筛选",
+                "genre",
+                "动画",
+                "yearFrom",
+                2000,
+                "yearTo",
+                2025,
+                "maxRuntime",
+                120,
+                "position",
+                5,
+                "enabled",
+                false));
+    var response = send("POST", "/admin/topics", input, true);
+    status(201, response);
+    String id = read(response).path("id").asText();
+    assertFalse(send("GET", "/topics", null, false).body().contains(id));
+    input.put("enabled", true);
+    status(200, send("PUT", "/admin/topics/" + id, input, true));
+    assertTrue(send("GET", "/topics", null, false).body().contains(id));
+    input.put("yearFrom", 2026);
+    status(400, send("PUT", "/admin/topics/" + id, input, true));
+    status(200, send("DELETE", "/admin/topics/" + id, null, true));
+    assertFalse(send("GET", "/topics", null, false).body().contains(id));
+  }
+
+  @Test
+  void recommendationObservationRequiresExposureRespectsOwnershipAndOptOut() throws Exception {
+    var guest = read(send("GET", "/recommendations", null, false));
+    assertTrue(guest.get(0).path("requestId").isNull());
+    String owner = newAccount("USER");
+    login(owner);
+    var picks = read(send("GET", "/recommendations", null, false));
+    String requestId = picks.get(0).path("requestId").asText();
+    long movie = picks.get(0).path("movie").path("id").asLong();
+    Map<String, Object> event =
+        Map.of("requestId", requestId, "movieId", movie, "event", "exposure");
+    status(403, send("POST", "/me/recommendation-events", event, false));
+    login(newAccount("USER"));
+    status(404, send("POST", "/me/recommendation-events", event, true));
+    login(owner);
+    status(200, send("PUT", "/me/library/" + movie, Map.of("status", "WATCHLIST"), true));
+    var db = jdbc;
+    assertNull(
+        db.queryForObject(
+            "SELECT saved_at FROM recommendation_observations WHERE run_id=? AND movie_id=?",
+            java.sql.Timestamp.class,
+            requestId,
+            movie));
+    status(200, send("POST", "/me/recommendation-events", event, true));
+    var exposed =
+        db.queryForObject(
+            "SELECT exposed_at FROM recommendation_observations WHERE run_id=? AND movie_id=?",
+            java.sql.Timestamp.class,
+            requestId,
+            movie);
+    status(200, send("POST", "/me/recommendation-events", event, true));
+    assertEquals(
+        exposed,
+        db.queryForObject(
+            "SELECT exposed_at FROM recommendation_observations WHERE run_id=? AND movie_id=?",
+            java.sql.Timestamp.class,
+            requestId,
+            movie));
+    status(
+        200,
+        send(
+            "POST",
+            "/me/recommendation-events",
+            Map.of("requestId", requestId, "movieId", movie, "event", "click"),
+            true));
+    status(200, send("PUT", "/me/library/" + movie, Map.of("status", "WATCHLIST"), true));
+    status(200, send("PUT", "/me/reviews/" + movie, Map.of("stars", 5, "body", "来自真实曝光"), true));
+    assertNotNull(
+        db.queryForObject(
+            "SELECT saved_at FROM recommendation_observations WHERE run_id=? AND movie_id=?",
+            java.sql.Timestamp.class,
+            requestId,
+            movie));
+    assertEquals(
+        5,
+        db.queryForObject(
+            "SELECT rating_stars FROM recommendation_observations WHERE run_id=? AND movie_id=?",
+            Integer.class,
+            requestId,
+            movie));
+    status(403, send("GET", "/admin/recommendation-metrics", null, false));
+    status(200, send("PUT", "/me/recommendation-settings", Map.of("enabled", false), true));
+    assertTrue(
+        read(send("GET", "/recommendations", null, false)).get(0).path("requestId").isNull());
+    status(200, send("DELETE", "/me/recommendation-history", null, true));
+    assertEquals(
+        0,
+        db.queryForObject(
+            "SELECT COUNT(*) FROM recommendation_runs WHERE user_id=?",
+            Long.class,
+            accounts.findByUsername(owner).id()));
+    assertEquals(5, read(send("GET", "/me/reviews/" + movie, null, false)).path("stars").asInt());
+    login(newAccount("ADMIN"));
+    status(200, send("GET", "/admin/recommendation-metrics?days=30", null, false));
+    status(400, send("GET", "/admin/recommendation-metrics?days=1", null, false));
+  }
+
+  @Test
+  void retentionAlwaysKeepsTheJustReturnedRequest() throws Exception {
+    login(newAccount("USER"));
+    long user = read(send("GET", "/session", null, false)).path("user").path("id").asLong();
+    // Same timestamp and lexicographically later IDs reproduce the retention boundary.
+    for (int i = 0; i < 200; i++)
+      jdbc.update(
+          "INSERT INTO recommendation_runs(id,user_id,algorithm_version,mode,segment,created_at)"
+              + " VALUES(?,?,?,?,?,?)",
+          "zz-retention-" + user + "-" + i,
+          user,
+          "fixture",
+          "balanced",
+          "new",
+          java.sql.Timestamp.from(java.time.Instant.now().plusSeconds(60)));
+    var picks = read(send("GET", "/recommendations", null, false));
+    String run = picks.get(0).path("requestId").asText();
+    assertEquals(
+        200L,
+        jdbc.queryForObject(
+            "SELECT COUNT(*) FROM recommendation_runs WHERE user_id=?", Long.class, user));
+    status(
+        200,
+        send(
+            "POST",
+            "/me/recommendation-events",
+            Map.of(
+                "requestId",
+                run,
+                "movieId",
+                picks.get(0).path("movie").path("id").asLong(),
+                "event",
+                "exposure"),
+            true));
+  }
+
+  @Test
+  void observationAttributionExpiresAndRetentionRemovesOldRuns() throws Exception {
+    String owner = newAccount("USER");
+    login(owner);
+    var picks = read(send("GET", "/recommendations", null, false));
+    String run = picks.get(0).path("requestId").asText();
+    long movie = picks.get(0).path("movie").path("id").asLong();
+    var past = java.sql.Timestamp.from(java.time.Instant.now().minus(java.time.Duration.ofDays(8)));
+    jdbc.update("UPDATE recommendation_observations SET exposed_at=? WHERE run_id=?", past, run);
+    status(200, send("PUT", "/me/reviews/" + movie, Map.of("stars", 4, "body", ""), true));
+    assertNull(
+        jdbc.queryForObject(
+            "SELECT rated_at FROM recommendation_observations WHERE run_id=? AND movie_id=?",
+            java.sql.Timestamp.class,
+            run,
+            movie));
+    jdbc.update(
+        "UPDATE recommendation_runs SET created_at=? WHERE id=?",
+        java.sql.Timestamp.from(java.time.Instant.now().minus(java.time.Duration.ofDays(91))),
+        run);
+    observation.prune();
+    assertEquals(
+        0,
+        jdbc.queryForObject(
+            "SELECT COUNT(*) FROM recommendation_runs WHERE id=?", Long.class, run));
   }
 }

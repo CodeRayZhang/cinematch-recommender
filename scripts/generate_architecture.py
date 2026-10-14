@@ -97,7 +97,7 @@ class Diagram:
 
 def architecture():
     d = Diagram("01-system-architecture", 1, "系统技术架构", "SYSTEM ARCHITECTURE", 1080,
-                "Vue 3 单页应用通过同源 HTTP/JSON 访问 Spring Boot 4 单体应用。Spring Security 保护业务 API，MyBatis 与少量 JdbcTemplate 访问 H2；MySQL 为待实机验证的可选配置。Vite 产物打入同一 JAR，海报从独立本地目录提供。")
+                "Vue 3 单页应用通过同源 HTTP/JSON 访问 Spring Boot 4 单体应用。Spring Security 保护业务 API，MyBatis 与少量 JdbcTemplate 访问 H2；MySQL 与 Compose 由 CI 运行真实实例验收。Vite 产物打入同一 JAR，海报从独立本地目录提供。")
     d.card(64, 174, 1472, 114, "浏览器 · Vue 3 单页应用", ["TypeScript 5.9  /  Vue Router 4  /  Vite 8  /  Lucide 图标  ·  电影发现、推荐、片单、个人中心与管理页面"], title_size=27, body_size=21)
     d.route([(632, 288), (632, 344)])
     d.text(658, 324, "同源 HTTP / JSON  ·  Cookie Session", 19, MUTED)
@@ -108,8 +108,8 @@ def architecture():
     d.text(88, 514, "按业务组织的 Controller / Service 模块", 20, MUTED)
     modules = [
         ("账号与资料", "auth", "登录 / 个人偏好"), ("电影目录", "movie", "查询 / 详情"),
-        ("个人片单", "library", "片单 / 评分"), ("推荐排序", "movie", "内容 / 邻域"),
-        ("内容管理", "admin", "电影 / 概览"), ("目录导入", "catalog", "显式启动导入"),
+        ("私人片单", "collection", "合集 / 观影记录"), ("推荐排序", "movie", "内容 / 邻域"),
+        ("内容管理", "admin", "专题 / 观察"), ("目录导入", "catalog", "显式启动导入"),
     ]
     for i, (title, package, description) in enumerate(modules):
         x = 88 + i * 184
@@ -120,12 +120,12 @@ def architecture():
     d.route([(632, 660), (632, 694)])
     d.rect(88, 694, 1088, 76, PALE, radius=10)
     d.text(110, 726, "持久化 · MyBatis Mapper / 参数化 SQL", 24, SAGE, bold=True)
-    d.text(110, 754, "事务保证批量片单、评分和目录导入一致性；管理统计与用户概览使用 JdbcTemplate。", 20, MUTED)
+    d.text(110, 754, "MyBatis + JdbcTemplate；事务保护片单、合集、评分与导入；公共候选 / 特征使用有界缓存。", 20, MUTED)
     d.card(1232, 344, 304, 212, "构建与交付", ["Vite → frontend/dist", "Maven → Boot JAR", "页面与 API 同进程提供", "开发代理：5173 → 8080"], title_size=24, body_size=18)
-    d.card(1232, 580, 304, 220, "维护与校验", ["Flyway 版本化迁移", "GitHub Actions CI", "HTTP / 推荐 / 导入测试", "MovieLens 离线评估"], title_size=24, body_size=19)
+    d.card(1232, 580, 304, 220, "维护与校验", ["Flyway 版本化迁移", "GitHub Actions CI", "H2 / MySQL 契约测试", "桌面 / 手机 E2E 验收"], title_size=24, body_size=19)
     d.route([(432, 800), (432, 854)])
     d.route([(984, 800), (984, 826), (1168, 826), (1168, 854)])
-    d.card(64, 854, 712, 154, "关系数据库", ["H2 文件库：本地已验证", "MySQL 8.4 / Compose：已有配置，待实机验证"], title_size=26, body_size=21)
+    d.card(64, 854, 712, 154, "关系数据库", ["H2 文件库：本地已验证", "MySQL 8.4 / Compose：CI 真实实例验收"], title_size=26, body_size=21)
     d.card(800, 854, 736, 154, "图片与本地文件", ["JAR 内静态资源 + 独立 catalog-posters 目录", "来源快照、图片校验记录、备份保存在本地"], title_size=26, body_size=21)
     return d
 
@@ -141,11 +141,11 @@ def user_features():
         d.text(x + 28, 392, title, 29, accent, bold=True)
         d.text(x + 28, 425, subtitle, 21, MUTED)
     cards = [
-        (64, 450, "发现与搜索", ["电影 / 导演搜索，类型筛选、排序、分页", "首页甄选与心情入口"], SAGE),
+        (64, 450, "发现与搜索", ["电影 / 导演搜索，完整类型、年份与时长", "排序、分页、首页甄选与可配置专题"], SAGE),
         (64, 626, "电影详情", ["简介、导演、年份、片长与外部参考评分", "相似电影、公开短评和资料来源"], SAGE),
         (64, 802, "即时推荐", ["精选 / 探索，最多三种类型与观影时长", "不重复换一组，返回上一组；页面内累计 120 部"], SAGE),
-        (820, 450, "个人中心", ["修改昵称与简介，设置最多八种长期偏好", "观影统计、评分管理、恢复隐藏推荐"], CORAL),
-        (820, 626, "私人片单", ["想看 / 看过、搜索排序、分页和批量操作", "移出可撤销；独立评分与短评仍保留"], CORAL),
+        (820, 450, "个人中心", ["修改昵称与简介，设置最多八种长期偏好", "评分分页、隐藏恢复、观察记录暂停 / 清除"], CORAL),
+        (820, 626, "私人片单", ["想看 / 看过、服务端分页、批量操作与撤销", "自定义合集：封面、备注、排序和 JSON 导出"], CORAL),
         (820, 802, "评分与推荐反馈", ["1–5 星评分；评分与短评可编辑或删除", "收藏和评分参与推荐；不感兴趣可隐藏"], CORAL),
     ]
     for x, y, title, lines, color in cards:
@@ -166,9 +166,9 @@ def admin_features():
     d.rect(64, 388, 1472, 388, PALE, BORDER)
     d.text(88, 431, "ADMIN 可用能力", 24, SAGE, bold=True)
     items = [
-        (88, "电影内容管理", ["搜索和分页浏览片库", "新增 / 编辑 / 删除电影", "编辑资料与海报地址", "设置或取消首页甄选"], "Movie CRUD", SAGE),
+        (88, "电影与首页专题", ["搜索分页、新增 / 编辑 / 删除", "电影资料、海报与首页甄选", "专题类型 / 年份 / 时长", "专题启用、顺序与删除"], "Movie CRUD", SAGE),
         (576, "用户概览 · 只读", ["查看最近 100 位用户", "账号、昵称、角色", "注册时间", "不返回密码或密码哈希"], "Read-only users", CORAL),
-        (1064, "运营统计", ["电影总数", "用户总数", "评分记录数", "片单条目数"], "Aggregate counts", SAGE),
+        (1064, "统计与推荐观察", ["电影 / 用户 / 评分 / 片单计数", "按版本、模式、评分历史分组", "曝光 / 点击 / 收藏 / 评分", "7 / 30 / 90 天真实保留记录"], "Observed feedback", SAGE),
     ]
     for x, title, lines, tag, accent in items:
         d.card(x, 460, 448, 282, title, lines, color=accent, title_size=27, body_size=22)
@@ -184,7 +184,7 @@ def recommendation_flow():
     d.card(64, 174, 1472, 106, "01  接收推荐请求", ["GET /api/recommendations  ·  mode / genres / maxRuntime / exclude  ·  参数白名单校验，游客可访问"], title_size=27, body_size=22)
     for x in (300, 800, 1300):
         d.route([(800, 280), (800, 308), (x, 308), (x, 336)])
-    d.card(64, 336, 472, 150, "02  电影候选", ["最多 5,000 部电影", "类型、导演、国家、年代和口碑"], title_size=25, body_size=21)
+    d.card(64, 336, 472, 150, "02  电影候选", ["最多 5,000 部；公共缓存 5 分钟", "变更提交失效；内容特征复用快照"], title_size=25, body_size=21)
     d.card(564, 336, 472, 150, "个人历史与偏好", ["片单、评分、长期类型与隐藏记录", "游客使用空历史；本次类型可覆盖长期类型"], title_size=25, body_size=19)
     d.card(1064, 336, 472, 150, "邻居评分召回", ["共同评分筛选，最多 200 位用户", "读取最多 50,000 条评分"], title_size=25, body_size=21)
     for x in (300, 800, 1300):
@@ -207,12 +207,12 @@ def recommendation_flow():
     d.text(88, 1241, "精选：不强制探索   /   探索：最多六个位置选择有评分依据的长尾影片，无合格候选则正常补位。", 22, MUTED)
     d.route([(800, 1268), (800, 1302)])
     d.rect(64, 1302, 1472, 64, INK, radius=12)
-    d.text(800, 1344, "返回最多 12 部电影  +  推荐理由  +  exploration 标记", 26, WHITE, bold=True, anchor="middle")
+    d.text(800, 1344, "返回最多 12 部电影 + 推荐理由 + 探索标记 + 观察 requestId", 26, WHITE, bold=True, anchor="middle")
     return d
 
 
 def data_pipeline():
-    d = Diagram("05-data-and-evaluation", 5, "数据导入与离线评估", "DATA PIPELINES", 1330,
+    d = Diagram("05-data-and-evaluation", 5, "数据导入与离线评估", "DATA PIPELINES", 1550,
                 "左侧：公开电影资料快照经Python下载、跨来源ID及字段校验、图片缓存后生成JSON，由显式启动的事务导入服务更新本地电影库。右侧：独立MovieLens数据按时间切分，训练数据生成候选和邻居，运行基线与探索评估，输出指标报告；不导入本站账号或评分。")
     d.rect(64, 174, 712, 84, PALE, BORDER)
     d.text(88, 225, "A / 公开电影资料 → 本地片库", 29, SAGE, bold=True)
@@ -240,6 +240,7 @@ def data_pipeline():
                 d.route([(x + 356, y + 140), (x + 356, y + 178)], color=accent)
     d.rect(64, 1188, 1472, 68, INK, radius=12)
     d.text(800, 1231, "来源快照、完整片库与海报仅保存在本地；评估不写入应用账号、片单或评分。", 24, WHITE, bold=True, anchor="middle")
+    d.card(64, 1290, 1472, 170, "C / 本站推荐观察 · 独立于离线评估", ["登录用户的版本化推荐 → 可见曝光 / 点击 → 服务端 7 天内收藏与评分归因 → 后台分组观察", "每人最多 200 次请求、最长 90 天；个人中心可暂停 / 清除；观察比率不等于准确率或因果提升"], title_size=26, body_size=23)
     return d
 
 

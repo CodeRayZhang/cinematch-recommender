@@ -73,12 +73,7 @@ public class RecommendationService {
     Map<Long, Movie> catalog = new LinkedHashMap<>();
     candidates.forEach(m -> catalog.put(m.id(), m));
     saved.forEach(m -> catalog.put(m.id(), m));
-    Map<String, Integer> genreCounts = new HashMap<>();
-    catalog
-        .values()
-        .forEach(m -> tokens(m.genres()).forEach(g -> genreCounts.merge(g, 1, Integer::sum)));
-    Map<Long, Map<String, Double>> vectors = new HashMap<>();
-    catalog.values().forEach(m -> vectors.put(m.id(), features(m, genreCounts, catalog.size())));
+    Map<Long, Map<String, Double>> vectors = featureVectors(catalog.values());
     Map<String, Double> positive = new HashMap<>(),
         negative = new HashMap<>(),
         genreAffinity = new HashMap<>(),
@@ -265,6 +260,23 @@ public class RecommendationService {
             result.put(id, Math.max(-1, Math.min(1, sum / (weights.get(id) + 1.5))));
         });
     return result;
+  }
+
+  private record FeatureSnapshot(List<Movie> movies, Map<Long, Map<String, Double>> vectors) {}
+
+  private FeatureSnapshot featureSnapshot;
+
+  // Keep one immutable feature space; changed metadata or off-cap history replaces it.
+  private synchronized Map<Long, Map<String, Double>> featureVectors(Collection<Movie> input) {
+    List<Movie> key = input.stream().sorted(Comparator.comparingLong(Movie::id)).toList();
+    if (featureSnapshot != null && featureSnapshot.movies().equals(key))
+      return featureSnapshot.vectors();
+    Map<String, Integer> counts = new HashMap<>();
+    key.forEach(m -> tokens(m.genres()).forEach(g -> counts.merge(g, 1, Integer::sum)));
+    Map<Long, Map<String, Double>> vectors = new HashMap<>();
+    key.forEach(m -> vectors.put(m.id(), Map.copyOf(features(m, counts, key.size()))));
+    featureSnapshot = new FeatureSnapshot(key, Map.copyOf(vectors));
+    return featureSnapshot.vectors();
   }
 
   private Map<String, Double> features(Movie m, Map<String, Integer> counts, int size) {

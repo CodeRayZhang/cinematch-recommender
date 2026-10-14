@@ -23,6 +23,11 @@ const router = createRouter({
       meta: { title: "我的片单" },
     },
     {
+      path: "/collections/:id?",
+      component: () => import("./views/CollectionsView.vue"),
+      meta: { title: "自定义片单" },
+    },
+    {
       path: "/profile",
       component: () => import("./views/ProfileView.vue"),
       meta: { title: "个人中心" },

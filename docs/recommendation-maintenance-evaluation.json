@@ -1,0 +1,62 @@
+{
+  "dataset" : "MovieLens 1M (existing local copy; raw files not redistributed)",
+  "ratings" : 1000209,
+  "catalogMovies" : 3662,
+  "cutoffUnix" : 975768738,
+  "trainRatings" : 800168,
+  "testRatings" : 200041,
+  "eligibleUsers" : 843,
+  "evaluatedUsers" : 100,
+  "seed" : 20261014,
+  "previousEvaluationUsersExcluded" : 100,
+  "freshEvaluationPool" : 743,
+  "sampleUserIds" : [ 4169, 696, 1884, 4780, 3571, 5493, 1912, 1611, 1413, 1067, 3333, 4116, 5657, 2247, 4950, 5317, 890, 2020, 649, 2097, 2307, 3560, 2415, 1181, 3311, 5049, 3886, 2462, 2232, 4517, 963, 2125, 1415, 3401, 1302, 3055, 2638, 1824, 2225, 3624, 4757, 639, 2478, 1556, 3012, 791, 4624, 2691, 6002, 1712, 4593, 3014, 4085, 5573, 5737, 3128, 1354, 1660, 1902, 3378, 5302, 3428, 754, 1073, 2106, 5387, 3590, 1889, 5722, 4117, 1356, 5424, 1500, 5920, 2438, 3679, 5938, 3371, 5281, 1645, 2380, 6016, 1077, 1890, 1628, 5428, 5565, 1491, 678, 1470, 1643, 3363, 2333, 4951, 4823, 1917, 3412, 1088, 929, 1969 ],
+  "headPopularityThreshold" : 338,
+  "tailDefinition" : "Training rating count strictly below the full catalog 80th percentile",
+  "k" : 12,
+  "deploymentDecision" : "Keep previousHybrid ordering as default; balanced is an unshipped two-slot experiment. Expose six-slot exploration only as an explicit opt-in.",
+  "protocol" : "Global chronological 80/20 split; tied cutoff timestamps stay in training; train-only rating aggregates and neighbors; relevant >=4 stars; full train catalog minus seen; sample users with >=20 train ratings and >=5 eligible future positives. No tuning on holdout.",
+  "sha256" : {
+    "ratings.dat" : "0ae247f6f5436bbaad08c2c135f1a14717a29b041b69a1ab108eacb11019663f",
+    "movies.dat" : "c822bd5e048757be63edcf9f5e0741f988bd449d5d6cd72dc9ed303cab1bdc60"
+  },
+  "metrics" : {
+    "previousHybrid" : {
+      "p95RankingMs" : 35.550042,
+      "meanRankingMs" : 29.480054589999998,
+      "ndcgAt12" : 0.22834384409298558,
+      "tailExposure" : 0.10833333333333332,
+      "hitRateAt12" : 0.78,
+      "catalogCoverage" : 0.056799563080284,
+      "recallAt12" : 0.05122251512691676,
+      "precisionAt12" : 0.21083333333333332,
+      "genreDiversity" : 0.6031960678210678
+    },
+    "balanced" : {
+      "p95RankingMs" : 29.562,
+      "meanRankingMs" : 23.19528533,
+      "ndcgAt12" : 0.21629406053495842,
+      "tailExposure" : 0.2175,
+      "hitRateAt12" : 0.77,
+      "catalogCoverage" : 0.060895685417804477,
+      "recallAt12" : 0.04743862750408454,
+      "precisionAt12" : 0.19583333333333333,
+      "genreDiversity" : 0.5915196608946609
+    },
+    "explore" : {
+      "p95RankingMs" : 21.25125,
+      "meanRankingMs" : 16.80672461,
+      "ndcgAt12" : 0.1720034412272761,
+      "tailExposure" : 0.5075,
+      "hitRateAt12" : 0.71,
+      "catalogCoverage" : 0.0701802293828509,
+      "recallAt12" : 0.036230030247988154,
+      "precisionAt12" : 0.1475,
+      "genreDiversity" : 0.552241341991342
+    }
+  },
+  "pairedBootstrapNdcgDelta95" : {
+    "balancedMinuspreviousHybrid" : [ -0.017718857935234554, -0.006784192856687525 ],
+    "exploreMinuspreviousHybrid" : [ -0.07282661719094957, -0.04125457023201439 ]
+  }
+}

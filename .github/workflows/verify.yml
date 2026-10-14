@@ -1,33 +1,72 @@
 name: Verify CineMatch
 on:
   push:
-    paths: ["frontend/**", "backend/**", "scripts/**", "docs/diagrams/**", "README.md", ".github/workflows/verify.yml"]
+    paths: ["frontend/**", "backend/**", "scripts/**", "docs/**", "README.md", "compose.yml", "Dockerfile", ".github/workflows/verify.yml"]
   pull_request:
-    paths: ["frontend/**", "backend/**", "scripts/**", "docs/diagrams/**", "README.md", ".github/workflows/verify.yml"]
+    paths: ["frontend/**", "backend/**", "scripts/**", "docs/**", "README.md", "compose.yml", "Dockerfile", ".github/workflows/verify.yml"]
 permissions:
   contents: read
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
-      - name: Check architecture diagrams
-        run: python3 scripts/generate_architecture.py --check
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version: "22"
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6.0.1
         with:
           distribution: temurin
           java-version: "21"
           cache: maven
           cache-dependency-path: backend/pom.xml
+      - run: python3 scripts/generate_architecture.py --check
       - run: npm ci
         working-directory: frontend
-      - run: npm run build
+      - run: npm run format:check && npm run build
         working-directory: frontend
-      - run: mvn -B -f backend/pom.xml verify
+      - name: H2 and real MySQL API contracts
+        run: mvn -B -f backend/pom.xml -Dcinematch.mysql=true verify
       - run: python3 scripts/import_catalog.py docs/demo-catalog.json
       - run: python3 -m unittest discover -s scripts -p "test_*.py"
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - name: Desktop and mobile browser flows
+        run: npm run test:e2e
+        working-directory: frontend
+      - name: Build and start actual Compose deployment
+        env:
+          # Disposable CI-only databases, not deployment credentials.
+          DATABASE_PASSWORD: ci-only-database-842
+          MYSQL_ROOT_PASSWORD: ci-only-root-842
+        run: |
+          mkdir -p backend/.data/catalog-posters
+          cp frontend/e2e/fixtures/catalog/proxy-check.svg backend/.data/catalog-posters/
+          docker compose -p cinematch-ci config --quiet
+          docker compose -p cinematch-ci up --build -d
+          python3 scripts/verify_container.py before
+          docker compose -p cinematch-ci stop app
+          docker compose -p cinematch-ci restart db
+          docker compose -p cinematch-ci up -d app
+          python3 scripts/verify_container.py after
+      - name: Upload browser reports and test results
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: verification-results
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+            backend/target/surefire-reports/
+          retention-days: 7
+      - name: Compose diagnostics and cleanup
+        if: always()
+        env:
+          DATABASE_PASSWORD: ci-only-database-842
+          MYSQL_ROOT_PASSWORD: ci-only-root-842
+        run: |
+          docker compose -p cinematch-ci logs --tail=100
+          docker compose -p cinematch-ci down -v

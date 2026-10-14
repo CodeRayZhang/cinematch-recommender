@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import {
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "../api";
-import type { Movie, MoviePage } from "../types";
+import type { Movie, MoviePage, CatalogTopic } from "../types";
 import { movieStatus, toggleWatchlist, notify } from "../state";
 import MovieCard from "../components/MovieCard.vue";
 import Icon from "../components/Icon.vue";
+import { MOVIE_GENRES } from "../genres";
 const route = useRoute(),
   router = useRouter();
 const featured = ref<Movie | null>(null),
@@ -13,17 +21,39 @@ const featured = ref<Movie | null>(null),
   loading = ref(true),
   error = ref(""),
   saving = ref(false);
-const genres = [
-  "全部",
-  "科幻",
-  "剧情",
-  "爱情",
-  "动画",
-  "悬疑",
-  "喜剧",
-  "冒险",
-  "音乐",
-];
+const genres = ["全部", ...MOVIE_GENRES];
+const topics = ref<CatalogTopic[]>([]);
+const filterForm = reactive({ yearFrom: "", yearTo: "", maxRuntime: "0" });
+watch(
+  () => route.query,
+  () =>
+    Object.assign(filterForm, {
+      yearFrom: String(route.query.yearFrom || ""),
+      yearTo: String(route.query.yearTo || ""),
+      maxRuntime: String(route.query.maxRuntime || "0"),
+    }),
+  { immediate: true },
+);
+function applyFilters() {
+  void router.push({
+    query: {
+      ...route.query,
+      yearFrom: filterForm.yearFrom || undefined,
+      yearTo: filterForm.yearTo || undefined,
+      maxRuntime:
+        filterForm.maxRuntime === "0" ? undefined : filterForm.maxRuntime,
+      page: undefined,
+    },
+  });
+}
+function topicQuery(topic: CatalogTopic) {
+  return {
+    genre: topic.genre || undefined,
+    yearFrom: topic.yearFrom || undefined,
+    yearTo: topic.yearTo || undefined,
+    maxRuntime: topic.maxRuntime || undefined,
+  };
+}
 const genre = computed(() => String(route.query.genre || ""));
 const sort = computed(() => String(route.query.sort || "popular"));
 const q = computed(() => String(route.query.q || ""));
@@ -47,7 +77,7 @@ async function load() {
   error.value = "";
   try {
     data.value = await api<MoviePage>(
-      `/movies?${new URLSearchParams({ q: q.value, genre: genre.value, sort: sort.value, page: String(page.value), size: "12" })}`,
+      `/movies?${new URLSearchParams({ q: q.value, genre: genre.value, sort: sort.value, page: String(page.value), size: "12", yearFrom: String(route.query.yearFrom || 0), yearTo: String(route.query.yearTo || 0), maxRuntime: String(route.query.maxRuntime || 0) })}`,
       { signal: current.signal },
     );
   } catch (e) {
@@ -73,7 +103,11 @@ async function saveHero() {
   }
 }
 watch(() => route.fullPath, load, { immediate: true });
+onBeforeUnmount(() => controller?.abort());
 onMounted(async () => {
+  api<CatalogTopic[]>("/topics")
+    .then((result) => (topics.value = result))
+    .catch(() => {});
   try {
     featured.value = (await api<Movie[]>("/movies/featured"))[0] || null;
   } catch {
@@ -90,7 +124,15 @@ onMounted(async () => {
       <span class="intro-note">给生活，留两个小时。</span>
     </div>
     <section
-      v-if="featured && !q && !genre && page === 1"
+      v-if="
+        featured &&
+        !q &&
+        !genre &&
+        !route.query.yearFrom &&
+        !route.query.yearTo &&
+        !route.query.maxRuntime &&
+        page === 1
+      "
       class="hero"
       aria-label="本期甄选"
     >
@@ -106,18 +148,14 @@ onMounted(async () => {
           ><span></span> 本期甄选 <span class="hero-label-line"></span> EDITOR’S
           PICK</span
         >
-        <h1 v-if="featured.id === 1">有些答案，<br />藏在星辰之间。</h1>
-        <h1 v-else>{{ featured.title }}</h1>
+        <h1>{{ featured.title }}</h1>
         <div class="hero-movie-line">
           <strong>{{ featured.title }}</strong
           ><span
             >{{ featured.originalTitle }} · {{ featured.releaseYear }}</span
           >
         </div>
-        <p v-if="featured.id === 1" class="hero-description">
-          跨越时间与宇宙的尽头，<br />去寻找那个始终让你牵挂的人。
-        </p>
-        <p v-else class="hero-description">
+        <p class="hero-description">
           {{ featured.synopsis.slice(0, 64)
           }}{{ featured.synopsis.length > 64 ? "…" : "" }}
         </p>
@@ -134,9 +172,7 @@ onMounted(async () => {
       </div>
       <div class="hero-side-caption">
         <span>THE WORLD IS BIGGER<br />THAN YOU THINK.</span
-        ><span>{{
-          featured.id === 1 ? "01 — 深空来信" : "01 — 编辑甄选"
-        }}</span>
+        ><span>{{ "01 — 编辑甄选" }}</span>
       </div>
       <div class="hero-bottom">
         <span
@@ -147,6 +183,32 @@ onMounted(async () => {
       </div>
     </section>
 
+    <section
+      v-if="
+        topics.length &&
+        !q &&
+        !genre &&
+        page === 1 &&
+        !route.query.yearFrom &&
+        !route.query.yearTo &&
+        !route.query.maxRuntime
+      "
+      class="catalog-topics"
+      aria-label="电影专题"
+    >
+      <RouterLink
+        v-for="(topic, index) in topics"
+        :key="topic.id"
+        :to="{ path: '/', query: topicQuery(topic) }"
+        class="catalog-topic"
+        ><span class="eyebrow"
+          >CINEMATCH CHAPTER {{ String(index + 1).padStart(2, "0") }}</span
+        >
+        <h2>{{ topic.title }}</h2>
+        <p>{{ topic.description }}</p>
+        <Icon name="ArrowUpRight" :size="20"
+      /></RouterLink>
+    </section>
     <section class="catalog-section" aria-label="电影片库">
       <div class="section-heading">
         <div>
@@ -182,6 +244,48 @@ onMounted(async () => {
         </div>
         <span v-if="data" class="catalog-count">{{ data.total }} 部好电影</span>
       </div>
+      <form class="catalog-filter-fields" @submit.prevent="applyFilters">
+        <label
+          >起始年份<input
+            v-model="filterForm.yearFrom"
+            type="number"
+            min="1888"
+            max="2100"
+            placeholder="不限"
+            aria-label="起始年份" /></label
+        ><span class="filter-range-mark">—</span
+        ><label
+          >结束年份<input
+            v-model="filterForm.yearTo"
+            type="number"
+            min="1888"
+            max="2100"
+            placeholder="不限"
+            aria-label="结束年份" /></label
+        ><label
+          >观影时长<select
+            v-model="filterForm.maxRuntime"
+            aria-label="片库时长筛选"
+          >
+            <option value="0">不限时长</option>
+            <option value="90">90 分钟以内</option>
+            <option value="120">120 分钟以内</option>
+            <option value="180">180 分钟以内</option>
+          </select></label
+        ><button class="button secondary compact">应用筛选</button
+        ><RouterLink
+          v-if="
+            genre ||
+            q ||
+            route.query.yearFrom ||
+            route.query.yearTo ||
+            route.query.maxRuntime
+          "
+          to="/"
+          class="text-link muted"
+          >清除筛选</RouterLink
+        >
+      </form>
       <div v-if="error" class="empty-state" role="alert">
         <Icon name="Film" :size="36" />
         <h3>银幕暂时休息一下</h3>

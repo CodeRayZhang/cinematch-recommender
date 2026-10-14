@@ -14,6 +14,8 @@ import {
 import type { Movie } from "../types";
 import MovieCard from "../components/MovieCard.vue";
 import Icon from "../components/Icon.vue";
+import CollectionPicker from "../components/CollectionPicker.vue";
+const collectionMovies = ref<number[]>([]);
 import { ratingLabel, sourceNote } from "../movieSource";
 const route = useRoute();
 const movie = ref<Movie>(),
@@ -64,12 +66,26 @@ async function load() {
 watch(() => route.params.id, load, { immediate: true });
 watch(
   [() => route.params.id, () => library.reviews],
-  () => {
+  async () => {
     const r = library.reviews.find(
       (x) => x.movieId === Number(route.params.id),
     );
     stars.value = r?.stars || 0;
     body.value = r?.body || "";
+    if (user.value) {
+      const id = Number(route.params.id);
+      try {
+        const own = await api<{ stars: number; body: string }>(
+          `/me/reviews/${id}`,
+        );
+        if (id === Number(route.params.id) && user.value) {
+          stars.value = own.stars;
+          body.value = own.body;
+        }
+      } catch (e) {
+        if ((e as Error).name !== "AbortError") notify((e as Error).message);
+      }
+    }
   },
   { immediate: true },
 );
@@ -163,6 +179,12 @@ async function submitReview() {
             role="group"
             aria-label="电影片单状态"
           >
+            <button
+              class="button secondary"
+              @click="requireUser() && (collectionMovies = [movie.id])"
+            >
+              收进自定义片单
+            </button>
             <button
               class="button full-width"
               :class="status === 'WATCHLIST' ? 'primary' : 'secondary'"
@@ -328,4 +350,8 @@ async function submitReview() {
       </section>
     </div>
   </div>
+  <CollectionPicker
+    :movie-ids="collectionMovies"
+    @close="collectionMovies = []"
+  />
 </template>

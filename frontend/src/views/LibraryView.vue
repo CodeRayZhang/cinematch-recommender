@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import {
   user,
   ready,
   authOpen,
   library,
+  libraryRevision,
   movieStatus,
   sessionError,
   loadSession,
@@ -12,17 +13,22 @@ import {
   notify,
 } from "../state";
 import { api } from "../api";
-import type { Movie, Entry } from "../types";
+import type { Movie, Entry, LibraryPage } from "../types";
 import Icon from "../components/Icon.vue";
 import ReviewEditor from "../components/ReviewEditor.vue";
+import CollectionPicker from "../components/CollectionPicker.vue";
 const tab = ref("ALL"),
   search = ref(""),
+  query = ref(""),
   sort = ref("recent"),
   selected = ref<number[]>([]),
   busy = ref(false),
+  loading = ref(false),
   error = ref(""),
   page = ref(1),
-  editing = ref<Movie | null>(null);
+  editing = ref<Movie | null>(null),
+  collectionMovies = ref<number[]>([]);
+const result = ref<LibraryPage>({ items: [], total: 0, page: 1, size: 24 });
 const undo = ref<
   { movieId: number; status: Entry["status"] | undefined }[] | null
 >(null);
@@ -33,73 +39,89 @@ const watched = computed(
   () => library.entries.filter((e) => e.status === "WATCHED").length,
 );
 const reviewMap = computed(
-  () => new Map(library.reviews.map((r) => [r.movieId, r])),
+  () =>
+    new Map(
+      result.value.items
+        .filter((row) => row.stars !== null)
+        .map((row) => [
+          row.movie.id,
+          { movieId: row.movie.id, stars: row.stars!, body: row.body || "" },
+        ]),
+    ),
 );
-const movies = computed(() => {
-  const order = new Map(
-    (tab.value === "RATED" ? library.reviews : library.entries).map((e, i) => [
-      e.movieId,
-      i,
-    ]),
-  );
-  return library.movies
-    .filter((m) => {
-      const status = movieStatus(m.id);
-      return (
-        (tab.value === "RATED"
-          ? reviewMap.value.has(m.id)
-          : tab.value === "ALL"
-            ? !!status
-            : status === tab.value) &&
-        `${m.title} ${m.originalTitle} ${m.director}`
-          .toLowerCase()
-          .includes(search.value.trim().toLowerCase())
-      );
-    })
-    .sort((a, b) =>
-      sort.value === "rating"
-        ? (reviewMap.value.get(b.id)?.stars || 0) -
-            (reviewMap.value.get(a.id)?.stars || 0) || a.id - b.id
-        : sort.value === "title"
-          ? a.title.localeCompare(b.title, "zh-CN")
-          : (order.get(a.id) ?? 999999) - (order.get(b.id) ?? 999999) ||
-            b.id - a.id,
-    );
-});
-const pages = computed(() => Math.max(1, Math.ceil(movies.value.length / 24)));
-const visible = computed(() =>
-  movies.value.slice((page.value - 1) * 24, page.value * 24),
-);
+const movies = computed(() => result.value.items.map((row) => row.movie));
+const visible = movies;
+const pages = computed(() => Math.max(1, Math.ceil(result.value.total / 24)));
 const allSelected = computed(
   () =>
     visible.value.length > 0 &&
-    visible.value.every((m) => selected.value.includes(m.id)),
+    visible.value.every((movie) => selected.value.includes(movie.id)),
 );
-watch([tab, search, sort], () => {
-  page.value = 1;
-  selected.value = [];
-});
-watch(pages, (n) => {
-  page.value = Math.min(page.value, n);
-});
-watch(user, () => {
-  selected.value = [];
-  undo.value = null;
-  editing.value = null;
-});
-watch(
-  () => library.movies,
-  () => {
-    selected.value = selected.value.filter((id) =>
-      library.movies.some((m) => m.id === id),
+let controller: AbortController | undefined;
+let timer: ReturnType<typeof setTimeout>;
+async function load() {
+  controller?.abort();
+  const request = new AbortController();
+  controller = request;
+  if (!user.value) {
+    result.value = { items: [], total: 0, page: 1, size: 24 };
+    return;
+  }
+  loading.value = true;
+  error.value = "";
+  try {
+    const data = await api<LibraryPage>(
+      `/me/library/page?${new URLSearchParams({ tab: tab.value, q: query.value, sort: sort.value, page: String(page.value), size: "24" })}`,
+      { signal: request.signal },
     );
+    if (!request.signal.aborted) {
+      result.value = data;
+      if (page.value > pages.value) page.value = pages.value;
+    }
+  } catch (e) {
+    if (!request.signal.aborted && (e as Error).name !== "AbortError")
+      error.value = (e as Error).message;
+  } finally {
+    if (!request.signal.aborted) loading.value = false;
+  }
+}
+watch(search, () => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    query.value = search.value;
+  }, 250);
+});
+watch([tab, query, sort], () => {
+  selected.value = [];
+  if (page.value !== 1) page.value = 1;
+  else void load();
+});
+watch([page, libraryRevision], () => void load(), { immediate: true });
+watch(
+  () => user.value?.id,
+  () => {
+    controller?.abort();
+    result.value = { items: [], total: 0, page: 1, size: 24 };
+    selected.value = [];
+    undo.value = null;
+    editing.value = null;
+    collectionMovies.value = [];
   },
 );
+onBeforeUnmount(() => {
+  controller?.abort();
+  clearTimeout(timer);
+});
 function selectAll() {
   selected.value = allSelected.value
-    ? selected.value.filter((id) => !visible.value.some((m) => m.id === id))
+    ? selected.value.filter(
+        (id) => !visible.value.some((movie) => movie.id === id),
+      )
     : [
-        ...new Set([...selected.value, ...visible.value.map((m) => m.id)]),
+        ...new Set([
+          ...selected.value,
+          ...visible.value.map((movie) => movie.id),
+        ]),
       ].slice(0, 100);
 }
 async function change(
@@ -109,6 +131,7 @@ async function change(
   if (busy.value || !ids.length) return;
   busy.value = true;
   error.value = "";
+  const owner = user.value?.id;
   const previous = ids.map((movieId) => ({
     movieId,
     status: movieStatus(movieId),
@@ -118,6 +141,7 @@ async function change(
       method: "PUT",
       body: JSON.stringify({ movieIds: ids, action }),
     });
+    if (owner !== user.value?.id) return;
     undo.value = previous;
     selected.value = [];
     await loadLibrary();
@@ -127,7 +151,8 @@ async function change(
         : `已标记 ${ids.length} 部${action === "WATCHED" ? "看过" : "想看"}`,
     );
   } catch (e) {
-    error.value = (e as Error).message;
+    if (owner === user.value?.id && (e as Error).name !== "AbortError")
+      error.value = (e as Error).message;
   } finally {
     busy.value = false;
   }
@@ -137,21 +162,20 @@ async function restore() {
   busy.value = true;
   error.value = "";
   try {
-    for (const action of ["WATCHLIST", "WATCHED", "REMOVE"] as const) {
-      const movieIds = undo.value
-        .filter((e) => (e.status || "REMOVE") === action)
-        .map((e) => e.movieId);
-      if (movieIds.length)
-        await api("/me/library/batch", {
-          method: "PUT",
-          body: JSON.stringify({ movieIds, action }),
-        });
-    }
+    await api("/me/library/restore", {
+      method: "PUT",
+      body: JSON.stringify({
+        entries: undo.value.map((entry) => ({
+          ...entry,
+          status: entry.status || null,
+        })),
+      }),
+    });
     undo.value = null;
     await loadLibrary();
     notify("已撤销上一次片单操作");
   } catch (e) {
-    error.value = (e as Error).message;
+    if ((e as Error).name !== "AbortError") error.value = (e as Error).message;
   } finally {
     busy.value = false;
   }
@@ -165,6 +189,9 @@ async function restore() {
         <h1>把喜欢，<span class="serif-accent">留在这里。</span></h1>
         <p>想看的远方，看过的故事。都由你整理。</p>
       </div>
+      <RouterLink v-if="user" to="/collections" class="button primary"
+        >自定义片单<Icon name="ArrowUpRight" :size="16"
+      /></RouterLink>
       <RouterLink v-if="user" to="/profile" class="button secondary"
         >个人中心<Icon name="ArrowUpRight" :size="16"
       /></RouterLink>
@@ -255,7 +282,7 @@ async function restore() {
         ><span>{{
           selected.length
             ? `已选 ${selected.length} 部`
-            : `共 ${movies.length} 部`
+            : `共 ${result.total} 部`
         }}</span>
         <div v-if="selected.length" class="batch-actions">
           <button :disabled="busy" @click="change('WATCHED', selected)">
@@ -264,10 +291,19 @@ async function restore() {
             移到想看</button
           ><button :disabled="busy" @click="change('REMOVE', selected)">
             移出片单</button
+          ><button :disabled="busy" @click="collectionMovies = [...selected]">
+            收进自定义片单</button
           ><button :disabled="busy" @click="selected = []">取消选择</button>
         </div>
       </div>
-      <div v-if="!movies.length" class="empty-state">
+      <div
+        v-if="loading && !movies.length"
+        class="empty-state"
+        aria-busy="true"
+      >
+        正在读取片单…
+      </div>
+      <div v-else-if="!movies.length" class="empty-state">
         <Icon name="Film" :size="36" />
         <h2>{{ search ? "没有找到这部电影" : "这里还在等待一个好故事。" }}</h2>
         <p>
@@ -281,7 +317,7 @@ async function restore() {
           >去发现电影<Icon name="ArrowRight" :size="16"
         /></RouterLink>
       </div>
-      <div v-else class="shelf-list" :aria-busy="busy">
+      <div v-else class="shelf-list" :aria-busy="busy || loading">
         <article
           v-for="movie in visible"
           :key="movie.id"
@@ -385,5 +421,9 @@ async function restore() {
       </div>
     </template>
     <ReviewEditor :movie="editing" @close="editing = null" />
+    <CollectionPicker
+      :movie-ids="collectionMovies"
+      @close="collectionMovies = []"
+    />
   </div>
 </template>

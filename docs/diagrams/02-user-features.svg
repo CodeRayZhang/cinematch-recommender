@@ -28,8 +28,8 @@
   <rect x="88" y="450" width="668" height="154" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="110" y="475" width="5" height="25" rx="2" fill="#426955" />
   <text x="130" y="496" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#426955" text-anchor="start" font-weight="600">发现与搜索</text>
-  <text x="112" y="534" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">电影 / 导演搜索，类型筛选、排序、分页</text>
-  <text x="112" y="564" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">首页甄选与心情入口</text>
+  <text x="112" y="534" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">电影 / 导演搜索，完整类型、年份与时长</text>
+  <text x="112" y="564" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">排序、分页、首页甄选与可配置专题</text>
   <rect x="88" y="626" width="668" height="154" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="110" y="651" width="5" height="25" rx="2" fill="#426955" />
   <text x="130" y="672" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#426955" text-anchor="start" font-weight="600">电影详情</text>
@@ -44,12 +44,12 @@
   <rect x="866" y="475" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="886" y="496" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#d66b4e" text-anchor="start" font-weight="600">个人中心</text>
   <text x="868" y="534" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">修改昵称与简介，设置最多八种长期偏好</text>
-  <text x="868" y="564" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">观影统计、评分管理、恢复隐藏推荐</text>
+  <text x="868" y="564" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">评分分页、隐藏恢复、观察记录暂停 / 清除</text>
   <rect x="844" y="626" width="668" height="154" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="866" y="651" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="886" y="672" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#d66b4e" text-anchor="start" font-weight="600">私人片单</text>
-  <text x="868" y="710" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">想看 / 看过、搜索排序、分页和批量操作</text>
-  <text x="868" y="740" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">移出可撤销；独立评分与短评仍保留</text>
+  <text x="868" y="710" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">想看 / 看过、服务端分页、批量操作与撤销</text>
+  <text x="868" y="740" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">自定义合集：封面、备注、排序和 JSON 导出</text>
   <rect x="844" y="802" width="668" height="154" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="866" y="827" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="886" y="848" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#d66b4e" text-anchor="start" font-weight="600">评分与推荐反馈</text>

@@ -11,7 +11,8 @@ const dialog = ref<HTMLDialogElement>(),
   body = ref(""),
   busy = ref(false),
   error = ref(""),
-  deleting = ref(false);
+  deleting = ref(false),
+  loadFailed = ref(false);
 watch(
   () => props.movie,
   async (movie) => {
@@ -20,20 +21,32 @@ watch(
       dialog.value?.close();
       return;
     }
-    const review = library.reviews.find((r) => r.movieId === movie.id);
+    error.value = "";
+    loadFailed.value = false;
+    let review = library.reviews.find((r) => r.movieId === movie.id);
+    try {
+      const full = await api<{ movieId: number; stars: number; body: string }>(
+        `/me/reviews/${movie.id}`,
+      );
+      if (props.movie?.id !== movie.id || !user.value) return;
+      review = full;
+    } catch (e) {
+      if ((e as Error).name === "AbortError") return;
+      loadFailed.value = true;
+      error.value = (e as Error).message;
+    }
     stars.value = review?.stars || 0;
     body.value = review?.body || "";
-    error.value = "";
     deleting.value = false;
     dialog.value?.showModal();
   },
   { immediate: true },
 );
-watch(user, (current) => {
-  if (!current) emit("close");
+watch(user, (current, previous) => {
+  if (current?.id !== previous?.id) emit("close");
 });
 async function save(remove = false) {
-  if (!props.movie || busy.value) return;
+  if (!props.movie || busy.value || loadFailed.value) return;
   busy.value = true;
   error.value = "";
   try {
@@ -100,7 +113,10 @@ async function save(remove = false) {
         <span class="muted small">{{ body.length }} / 2000</span>
         <p v-if="error" class="form-error" role="alert">{{ error }}</p>
         <div class="editor-actions">
-          <button class="button primary" :disabled="busy || !stars">
+          <button
+            class="button primary"
+            :disabled="busy || !stars || loadFailed"
+          >
             {{ busy ? "保存中…" : "保存评分" }}</button
           ><button
             type="button"

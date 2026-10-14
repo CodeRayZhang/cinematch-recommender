@@ -15,10 +15,15 @@ import tools.jackson.databind.json.JsonMapper;
 public class CatalogImportService {
   private final JdbcTemplate jdbc;
   private final Validator validator;
+  private final org.springframework.context.ApplicationEventPublisher events;
 
-  public CatalogImportService(JdbcTemplate jdbc, Validator validator) {
+  public CatalogImportService(
+      JdbcTemplate jdbc,
+      Validator validator,
+      org.springframework.context.ApplicationEventPublisher events) {
     this.jdbc = jdbc;
     this.validator = validator;
+    this.events = events;
   }
 
   public record Entry(
@@ -115,6 +120,7 @@ public class CatalogImportService {
         updated++;
       }
     }
+    events.publishEvent(new com.cinematch.movie.CatalogCache.Changed());
     return new Result(created, updated, skipped);
   }
 }

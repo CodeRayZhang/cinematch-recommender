@@ -24,8 +24,8 @@
   <rect x="64" y="336" width="472" height="150" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="86" y="361" width="5" height="25" rx="2" fill="#426955" />
   <text x="106" y="382" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">02  电影候选</text>
-  <text x="88" y="420" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">最多 5,000 部电影</text>
-  <text x="88" y="450" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">类型、导演、国家、年代和口碑</text>
+  <text x="88" y="420" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">最多 5,000 部；公共缓存 5 分钟</text>
+  <text x="88" y="450" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">变更提交失效；内容特征复用快照</text>
   <rect x="564" y="336" width="472" height="150" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="586" y="361" width="5" height="25" rx="2" fill="#426955" />
   <text x="606" y="382" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#426955" text-anchor="start" font-weight="600">个人历史与偏好</text>
@@ -88,5 +88,5 @@
   <polyline points="800,1268 800,1302" fill="none" stroke="#83998c" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="800.00,1302.00 794.50,1290.00 805.50,1290.00" fill="#83998c" />
   <rect x="64" y="1302" width="1472" height="64" rx="12" fill="#1b3028" />
-  <text x="800" y="1344" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="600">返回最多 12 部电影  +  推荐理由  +  exploration 标记</text>
+  <text x="800" y="1344" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="600">返回最多 12 部电影 + 推荐理由 + 探索标记 + 观察 requestId</text>
 </svg>

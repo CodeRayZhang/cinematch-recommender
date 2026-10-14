@@ -4,6 +4,8 @@ import { api } from "../api";
 import { user, ready, authOpen, notify, loadLibrary } from "../state";
 import type { Movie, MoviePage } from "../types";
 import Icon from "../components/Icon.vue";
+import TopicEditor from "../components/TopicEditor.vue";
+import RecommendationMetrics from "../components/RecommendationMetrics.vue";
 const stats = ref<Record<string, number>>({}),
   movies = ref<Movie[]>([]),
   users = ref<Record<string, unknown>[]>([]);
@@ -37,7 +39,14 @@ const form = reactive(defaults());
 const pages = computed(() => Math.ceil(total.value / 12));
 let requestId = 0;
 async function load() {
-  if (user.value?.role !== "ADMIN") return;
+  if (user.value?.role !== "ADMIN") {
+    requestId++;
+    stats.value = {};
+    movies.value = [];
+    users.value = [];
+    dialog.value?.close();
+    return;
+  }
   const id = ++requestId;
   busy.value = true;
   error.value = "";
@@ -160,7 +169,17 @@ async function remove(movie: Movie) {
           <button :class="{ active: tab === 'movies' }" @click="tab = 'movies'">
             电影管理</button
           ><button :class="{ active: tab === 'users' }" @click="tab = 'users'">
-            用户概览
+            用户概览</button
+          ><button
+            :class="{ active: tab === 'topics' }"
+            @click="tab = 'topics'"
+          >
+            首页专题</button
+          ><button
+            :class="{ active: tab === 'metrics' }"
+            @click="tab = 'metrics'"
+          >
+            推荐观察
           </button>
         </div>
         <form
@@ -178,6 +197,8 @@ async function remove(movie: Movie) {
       <p v-if="error" class="form-error" role="alert">
         {{ error }}<button class="text-link" @click="load">重试</button>
       </p>
+      <TopicEditor v-if="tab === 'topics'" />
+      <RecommendationMetrics v-if="tab === 'metrics'" />
       <div v-if="tab === 'movies'" class="table-scroll" :aria-busy="busy">
         <table>
           <thead>
@@ -241,7 +262,7 @@ async function remove(movie: Movie) {
           没有找到对应电影。
         </div>
       </div>
-      <div v-else class="table-scroll">
+      <div v-else-if="tab === 'users'" class="table-scroll">
         <table>
           <thead>
             <tr>

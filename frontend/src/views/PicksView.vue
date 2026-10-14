@@ -302,7 +302,12 @@ onUnmounted(() => controller?.abort());
     </div>
     <div v-else-if="picks.length" class="movie-grid" :aria-busy="loading">
       <div v-for="(pick, i) in picks" :key="pick.movie.id">
-        <MovieCard :movie="pick.movie" :reason="pick.reason" :index="i" />
+        <MovieCard
+          :movie="pick.movie"
+          :reason="pick.reason"
+          :index="i"
+          :request-id="pick.requestId"
+        />
         <div class="pick-footnote">
           <span v-if="pick.exploration" class="exploration-badge"
             ><Icon name="Sparkles" :size="11" />探索发现</span

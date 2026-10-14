@@ -14,10 +14,15 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminController {
   private final MovieMapper movies;
   private final JdbcTemplate jdbc;
+  private final org.springframework.context.ApplicationEventPublisher events;
 
-  public AdminController(MovieMapper movies, JdbcTemplate jdbc) {
+  public AdminController(
+      MovieMapper movies,
+      JdbcTemplate jdbc,
+      org.springframework.context.ApplicationEventPublisher events) {
     this.movies = movies;
     this.jdbc = jdbc;
+    this.events = events;
   }
 
   @GetMapping("/stats")
@@ -47,6 +52,7 @@ public class AdminController {
   @ResponseStatus(HttpStatus.CREATED)
   public Map<String, String> create(@Valid @RequestBody Input input) {
     movies.insert(input.movie(0));
+    events.publishEvent(new CatalogCache.Changed());
     return Map.of("message", "电影已添加");
   }
 
@@ -54,12 +60,14 @@ public class AdminController {
   public Map<String, String> update(@PathVariable long id, @Valid @RequestBody Input input) {
     if (movies.update(input.movie(id)) == 0)
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "电影不存在");
+    events.publishEvent(new CatalogCache.Changed());
     return Map.of("message", "电影已更新");
   }
 
   @DeleteMapping("/movies/{id}")
   public Map<String, String> delete(@PathVariable long id) {
     if (movies.delete(id) == 0) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "电影不存在");
+    events.publishEvent(new CatalogCache.Changed());
     return Map.of("message", "电影已删除");
   }
 

@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRecommendationObservation } from "../composables/observation";
 import type { Movie } from "../types";
 import { movieStatus, toggleWatchlist, notify } from "../state";
 import Icon from "./Icon.vue";
 import { ratingLabel, sourceNote } from "../movieSource";
-defineProps<{ movie: Movie; reason?: string; index?: number }>();
+const props = defineProps<{
+  movie: Movie;
+  reason?: string;
+  index?: number;
+  requestId?: string | null;
+}>();
+const card = ref<HTMLElement>();
+const observation = useRecommendationObservation(card, () => ({
+  requestId: props.requestId,
+  movieId: props.movie.id,
+}));
 const saving = ref(false);
 async function save(id: number) {
   saving.value = true;
@@ -24,6 +35,7 @@ function fallback(e: Event) {
 </script>
 <template>
   <article
+    ref="card"
     class="movie-card"
     :style="{ '--card-delay': `${((index || 0) % 6) * 35}ms` }"
   >
@@ -32,6 +44,7 @@ function fallback(e: Event) {
         :to="`/movie/${movie.id}`"
         :aria-label="`查看《${movie.title}》`"
         class="poster-link"
+        @click="observation.click"
       >
         <img
           :src="movie.posterUrl"
@@ -72,9 +85,12 @@ function fallback(e: Event) {
         />
       </button>
     </div>
-    <RouterLink :to="`/movie/${movie.id}`" class="movie-title">{{
-      movie.title
-    }}</RouterLink>
+    <RouterLink
+      :to="`/movie/${movie.id}`"
+      class="movie-title"
+      @click="observation.click"
+      >{{ movie.title }}</RouterLink
+    >
     <p class="movie-meta">
       {{ movie.releaseYear }} <span>·</span>
       {{ movie.genres.split(",").slice(0, 2).join(" / ") }}

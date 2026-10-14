@@ -1,0 +1,266 @@
+.movie-card {
+  min-width: 0;
+  animation: card-appear 0.45s both;
+  animation-delay: var(--card-delay, 0ms);
+}
+.poster-wrap {
+  position: relative;
+  aspect-ratio: 2/3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #30372f;
+  margin-bottom: 13px;
+}
+.poster-link {
+  height: 100%;
+  display: block;
+  overflow: hidden;
+}
+.poster-link > img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition:
+    transform 0.4s,
+    filter 0.4s;
+}
+.poster-link:hover > img {
+  transform: scale(1.045);
+  filter: brightness(0.85);
+}
+.poster-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #11191194, transparent 30%);
+  pointer-events: none;
+}
+.poster-open {
+  position: absolute;
+  bottom: 17px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: 0.2s;
+}
+.poster-link:hover .poster-open,
+.poster-link:focus-visible .poster-open {
+  opacity: 1;
+  transform: translateY(0);
+}
+.rating-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 3px 6px;
+  background: #131713d9;
+  color: #e9d5a3;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+.rating-badge svg {
+  fill: #d7bf80;
+  stroke: none;
+}
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  width: 33px;
+  height: 33px;
+  flex-shrink: 0;
+}
+.icon-button:not(:disabled):hover {
+  background: #ffffff12;
+}
+.save-movie {
+  position: absolute;
+  right: 9px;
+  top: 9px;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background: #172019aa;
+  border-color: #e8eddf24;
+  backdrop-filter: blur(6px);
+  color: white;
+}
+.save-movie:not(:disabled):hover {
+  background: #e9e9da;
+  color: #232a20;
+}
+.save-movie.saved {
+  background: #d4dbc5;
+  color: #202b1f;
+  border-color: #d4dbc5;
+}
+.movie-title {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.movie-title:hover {
+  color: var(--accent);
+}
+.movie-meta {
+  font-size: 10px;
+  color: #90998b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+.movie-meta > span {
+  padding: 0 5px;
+  color: #5e6757;
+}
+.recommendation-reason {
+  font-size: 10px;
+  color: #c2b28d;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 9px;
+  line-height: 1.5;
+}
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 0 0;
+  color: #959d8e;
+  font-size: 11px;
+}
+.pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.page-button {
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.page-gap {
+  width: 12px;
+  text-align: center;
+}
+.page-button.active {
+  border-color: #58634e;
+  color: #e0e2d4;
+  background: #292f25;
+}
+.editorial-section {
+  padding: 55px 0 62px;
+}
+.editorial-section .section-heading h2 {
+  font-size: 23px;
+}
+.mood-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.mood-card {
+  height: 205px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #535e4233;
+  border-radius: 7px;
+  padding: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #343c2f;
+}
+.mood-card > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.27;
+  transition: transform 0.5s;
+}
+.mood-card:hover > img {
+  transform: scale(1.07);
+}
+.mood-card:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #16221ded, transparent);
+}
+.mood-card > div:not(.mood-art),
+.mood-card > svg {
+  position: relative;
+  z-index: 1;
+}
+.mood-card .eyebrow {
+  font-size: 8px;
+  color: #b4c1a7;
+  letter-spacing: 1.4px;
+}
+.mood-card h3 {
+  font-family: var(--serif);
+  font-size: 27px;
+  letter-spacing: 1px;
+  margin: 12px 0 8px;
+  color: #e7ead9;
+}
+.mood-card p {
+  font-size: 11px;
+  color: #a5b297;
+}
+.mood-card > svg {
+  align-self: flex-end;
+  color: #cbd7b7;
+}
+.mood-card.romantic {
+  background: #514438;
+}
+.mood-card.romantic:after {
+  background: linear-gradient(90deg, #362b27eb 15%, #362b2733);
+}
+.mood-art {
+  position: absolute;
+  right: 27px;
+  top: -40px;
+  display: flex;
+  gap: 10px;
+  transform: rotate(13deg);
+}
+.mood-art img {
+  height: 290px;
+  width: 170px;
+  object-fit: cover;
+  border-radius: 3px;
+  opacity: 0.35;
+}
+.mood-art img:last-child {
+  margin-top: 45px;
+}
+.romantic .eyebrow {
+  color: #cbb69f;
+}
+.romantic p {
+  color: #c2ab95;
+}

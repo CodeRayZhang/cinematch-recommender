@@ -36,11 +36,11 @@
   <text x="88" y="431" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">ADMIN 可用能力</text>
   <rect x="88" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="110" y="485" width="5" height="25" rx="2" fill="#426955" />
-  <text x="130" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">电影内容管理</text>
-  <text x="112" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">搜索和分页浏览片库</text>
-  <text x="112" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">新增 / 编辑 / 删除电影</text>
-  <text x="112" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">编辑资料与海报地址</text>
-  <text x="112" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">设置或取消首页甄选</text>
+  <text x="130" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">电影与首页专题</text>
+  <text x="112" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">搜索分页、新增 / 编辑 / 删除</text>
+  <text x="112" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">电影资料、海报与首页甄选</text>
+  <text x="112" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">专题类型 / 年份 / 时长</text>
+  <text x="112" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">专题启用、顺序与删除</text>
   <rect x="112" y="688" width="220" height="32" rx="8" fill="#e8efe5" />
   <text x="222.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#426955" text-anchor="middle" font-weight="600">Movie CRUD</text>
   <rect x="576" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
@@ -54,13 +54,13 @@
   <text x="710.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#d66b4e" text-anchor="middle" font-weight="600">Read-only users</text>
   <rect x="1064" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="1086" y="485" width="5" height="25" rx="2" fill="#426955" />
-  <text x="1106" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">运营统计</text>
-  <text x="1088" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">电影总数</text>
-  <text x="1088" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">用户总数</text>
-  <text x="1088" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">评分记录数</text>
-  <text x="1088" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">片单条目数</text>
+  <text x="1106" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">统计与推荐观察</text>
+  <text x="1088" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">电影 / 用户 / 评分 / 片单计数</text>
+  <text x="1088" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">按版本、模式、评分历史分组</text>
+  <text x="1088" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">曝光 / 点击 / 收藏 / 评分</text>
+  <text x="1088" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">7 / 30 / 90 天真实保留记录</text>
   <rect x="1088" y="688" width="220" height="32" rx="8" fill="#e8efe5" />
-  <text x="1198.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#426955" text-anchor="middle" font-weight="600">Aggregate counts</text>
+  <text x="1198.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#426955" text-anchor="middle" font-weight="600">Observed feedback</text>
   <rect x="64" y="812" width="712" height="116" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="86" y="837" width="5" height="25" rx="2" fill="#426955" />
   <text x="106" y="858" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#426955" text-anchor="start" font-weight="600">管理员初始化</text>
