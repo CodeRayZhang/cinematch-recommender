@@ -11,3 +11,6 @@
 @import "./styles/personal.css";
 @import "./styles/recommendation.css";
 @import "./styles/collections.css";
+
+@import "./styles/models.css";
+@import "./styles/lab.css";

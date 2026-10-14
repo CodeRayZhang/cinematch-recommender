@@ -1,0 +1,81 @@
+{
+  "phase" : "validation",
+  "protocol" : "Global time split 70% training / 10% validation / 20% test, tied timestamps remain in earlier partition. Validation selects fusion weight only. Test retrains on first 80% with frozen parameters and weight. >=20 past ratings and >=5 eligible future positives; deterministic sample <=100 users. Full training catalog minus seen; positive >=4; k=12. Users with no history and new items are not evaluated by ranking; unknown test items counted for RMSE coverage. Same benchmark family as earlier reports, not a fresh independent dataset.",
+  "validationCutoff" : 974862386,
+  "testCutoff" : 975768738,
+  "trainRatings" : 700148,
+  "futureRatings" : 100020,
+  "sampleUserIds" : [ 2120, 2114, 1628, 1755, 2474, 1545, 1182, 1579, 2021, 2395, 1389, 1743, 1875, 4277, 5034, 2063, 2844, 1340, 2116, 1883, 1707, 1362, 1231, 1306, 3017, 1425, 3411, 1767, 1449, 2011, 2446, 1667, 4875, 4983, 1983, 1896, 1937, 1509, 1884, 2119, 3233, 2089, 2414, 1288, 1917, 1974, 2244, 1242, 1988, 1395, 3681, 1274, 1365, 1376, 1199, 2583, 2054, 1912, 2038, 2784, 1266, 3516, 1899, 1291, 1230, 1216, 1172, 5812, 2428, 1978, 1489, 2429, 1261, 1786, 4802, 2079, 1211, 1203, 1941, 1748, 1162, 1374, 2826, 1202, 1491, 4653, 1163, 2041, 1636, 2188, 1317, 2030, 1546, 5595, 3387, 1624, 2849, 1613, 1263, 1552 ],
+  "catalogMovies" : 3633,
+  "parameters" : {
+    "rank" : 16,
+    "iterations" : 15,
+    "regularization" : 0.1,
+    "seed" : 42
+  },
+  "selectedWeight" : 0.45,
+  "trainingMillis" : 1639,
+  "metrics" : {
+    "popularity" : {
+      "catalogCoverage" : 0.022295623451692816,
+      "ndcgAt12" : 0.2177350325265701,
+      "recallAt12" : 0.06681010343805759,
+      "genreDiversity" : 0.7724720418470419,
+      "meanRankingMillis" : 0.49831623,
+      "precisionAt12" : 0.205
+    },
+    "currentHybrid" : {
+      "catalogCoverage" : 0.05752821359757776,
+      "ndcgAt12" : 0.18644091787711883,
+      "recallAt12" : 0.06435634962922288,
+      "genreDiversity" : 0.5903203463203464,
+      "meanRankingMillis" : 30.62135001,
+      "precisionAt12" : 0.1758333333333333
+    },
+    "alsRank1" : {
+      "catalogCoverage" : 0.010734929810074319,
+      "ndcgAt12" : 0.001245622738286781,
+      "recallAt12" : 4.4888597640891216E-4,
+      "genreDiversity" : 0.5669065656565656,
+      "meanRankingMillis" : 0.70682503,
+      "precisionAt12" : 0.0016666666666666666
+    },
+    "alsRank16" : {
+      "catalogCoverage" : 0.06028075970272502,
+      "ndcgAt12" : 0.06870670613970042,
+      "recallAt12" : 0.024706088504182593,
+      "genreDiversity" : 0.7881792929292929,
+      "meanRankingMillis" : 0.65007581,
+      "precisionAt12" : 0.07416666666666666
+    },
+    "hybridWeight0.45" : {
+      "catalogCoverage" : 0.0495458298926507,
+      "ndcgAt12" : 0.20111190780352653,
+      "recallAt12" : 0.06636182648208613,
+      "genreDiversity" : 0.6235016233766233,
+      "meanRankingMillis" : 30.02314707,
+      "precisionAt12" : 0.18333333333333332
+    },
+    "hybridWeight1.5" : {
+      "catalogCoverage" : 0.04927057528213598,
+      "ndcgAt12" : 0.1969704356356684,
+      "recallAt12" : 0.05710664963272636,
+      "genreDiversity" : 0.6722481962481962,
+      "meanRankingMillis" : 29.83246917,
+      "precisionAt12" : 0.17666666666666667
+    },
+    "hybridWeight3.0" : {
+      "catalogCoverage" : 0.05257363060831269,
+      "ndcgAt12" : 0.15941404424100802,
+      "recallAt12" : 0.04609660472382729,
+      "genreDiversity" : 0.7228326118326117,
+      "meanRankingMillis" : 29.85784421,
+      "precisionAt12" : 0.1433333333333333
+    }
+  },
+  "alsRank16Rmse" : 0.8546030762728106,
+  "rmsePredictedRatings" : 9634,
+  "rmseUnknownItems" : 2,
+  "pairedBootstrapNdcgDelta95" : [ 0.003103534620457683, 0.02746849194536743 ],
+  "ratingsSha256" : "0ae247f6f5436bbaad08c2c135f1a14717a29b041b69a1ab108eacb11019663f"
+}

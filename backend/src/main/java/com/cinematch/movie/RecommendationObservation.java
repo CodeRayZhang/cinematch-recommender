@@ -66,6 +66,12 @@ public class RecommendationObservation {
   @Transactional
   public String record(
       long user, String mode, int ratings, List<RecommendationService.Pick> picks) {
+    return record(user, mode, ratings, picks, VERSION);
+  }
+
+  @Transactional
+  public String record(
+      long user, String mode, int ratings, List<RecommendationService.Pick> picks, String version) {
     if (picks.isEmpty()) return null;
     // Serialize per-user retention and opt-out with ordinary application transactions.
     jdbc.queryForObject("SELECT id FROM users WHERE id=? FOR UPDATE", Long.class, user);
@@ -76,7 +82,7 @@ public class RecommendationObservation {
             + " VALUES(?,?,?,?,?)",
         id,
         user,
-        VERSION,
+        version,
         mode,
         ratings == 0 ? "new" : ratings < 20 ? "sparse" : "active");
     for (int i = 0; i < picks.size(); i++)

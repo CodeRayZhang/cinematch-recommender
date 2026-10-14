@@ -40,6 +40,8 @@ jobs:
       - name: Build and start actual Compose deployment
         env:
           # Disposable CI-only databases, not deployment credentials.
+          ADMIN_USERNAME: ci_model_admin
+          ADMIN_PASSWORD: Ci-model-admin-only-842!
           DATABASE_PASSWORD: ci-only-database-842
           MYSQL_ROOT_PASSWORD: ci-only-root-842
         run: |

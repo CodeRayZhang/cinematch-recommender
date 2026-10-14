@@ -54,6 +54,6 @@
   <rect x="866" y="827" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="886" y="848" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#d66b4e" text-anchor="start" font-weight="600">评分与推荐反馈</text>
   <text x="868" y="886" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">1–5 星评分；评分与短评可编辑或删除</text>
-  <text x="868" y="916" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">收藏和评分参与推荐；不感兴趣可隐藏</text>
+  <text x="868" y="916" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">观影指纹、评分引导、模型反馈；不感兴趣可隐藏</text>
   <text x="800" y="1044" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#1b3028" text-anchor="middle" font-weight="600">发现电影  →  想看 / 看过  →  记录感受  →  调整个人推荐</text>
 </svg>

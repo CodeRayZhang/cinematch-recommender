@@ -50,3 +50,7 @@ V5 只新增 `user_profiles`、`recommendation_feedback` 和评分索引，不�
 ## 公开目录导入
 
 `catalog` 模块提供显式启动参数驱动的本地导入，来源字段通过 V4 迁移添加。导入只更新电影资料，不触及账号、片单和用户评分；整批事务保证失败回滚，来源 URL 唯一索引防止重复导入。外部海报从独立数据目录提供，不与数据库文件共用公开静态目录。
+
+## 可训练推荐模块（V7）
+
+新增 `recommender` 包：`TrainingData` 验证数据与映射并生成快照，`AlsModel` 交替训练与个人 fold-in，`ModelRegistry` 管理异步训练、数据库版本与活动指针，`ModelPersonalizer` 映射本站评分并提供融合分。活动模型是全局电影向量缓存，个人向量每次请求重算。单进程后台线程不构成分布式训练服务，模型损坏会回退原推荐。完整部署边界见 [模型指南](recommendation-models.md)。

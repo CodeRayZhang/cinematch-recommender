@@ -18,6 +18,7 @@ import tools.jackson.databind.json.JsonMapper;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     properties = {
       "spring.datasource.url=jdbc:h2:mem:integration;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
+      "app.recommender.data-directory=${java.io.tmpdir}/cinematch-model-tests",
       "app.admin.username=",
       "app.admin.password="
     })
@@ -671,5 +672,231 @@ class ApiIntegrationTest {
         0,
         jdbc.queryForObject(
             "SELECT COUNT(*) FROM recommendation_runs WHERE id=?", Long.class, run));
+  }
+
+  @Test
+  void trainedModelLifecycleAuthorizationAndImmediatePersonalization() throws Exception {
+    status(401, send("GET", "/admin/recommender/models", null, false));
+    String regular = newAccount("USER");
+    login(regular);
+    status(403, send("GET", "/admin/recommender/models", null, false));
+    String admin = newAccount("ADMIN");
+    login(admin);
+    status(403, send("POST", "/admin/recommender/disable", null, false));
+    status(
+        400,
+        send(
+            "POST",
+            "/admin/recommender/models",
+            Map.of(
+                "dataset",
+                "../escape",
+                "rank",
+                2,
+                "iterations",
+                2,
+                "regularization",
+                .1,
+                "seed",
+                42),
+            true));
+    List<Long> fixtures = new ArrayList<>();
+    List<String> versions = new ArrayList<>();
+    var movieIds = jdbc.queryForList("SELECT id FROM movies ORDER BY id LIMIT 8", Long.class);
+    try {
+      for (int i = 0; i < 5; i++) {
+        long id = accounts.findByUsername(newAccount("USER")).id();
+        fixtures.add(id);
+        for (int j = 0; j < movieIds.size(); j++)
+          jdbc.update(
+              "INSERT INTO reviews(user_id,movie_id,stars,body) VALUES(?,?,?,?)",
+              id,
+              movieIds.get(j),
+              1 + (i + j) % 5,
+              "");
+      }
+      String first = null;
+      for (int version = 0; version < 2; version++) {
+        var response =
+            send(
+                "POST",
+                "/admin/recommender/models",
+                Map.of(
+                    "dataset",
+                    "local",
+                    "rank",
+                    2,
+                    "iterations",
+                    2,
+                    "regularization",
+                    .1,
+                    "seed",
+                    42 + version),
+                true);
+        status(202, response);
+        String id = read(response).path("id").asText();
+        versions.add(id);
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(20);
+        String state = "";
+        do {
+          state =
+              jdbc.queryForObject(
+                  "SELECT status FROM recommendation_models WHERE id=?", String.class, id);
+          if (Set.of("READY", "FAILED").contains(state)) break;
+          Thread.sleep(25);
+        } while (System.nanoTime() < deadline);
+        assertEquals(
+            "READY",
+            state,
+            jdbc.queryForObject(
+                "SELECT error_message FROM recommendation_models WHERE id=?", String.class, id));
+        status(200, send("POST", "/admin/recommender/models/" + id + "/activate", null, true));
+        status(409, send("DELETE", "/admin/recommender/models/" + id, null, true));
+        var exported = send("GET", "/admin/recommender/models/" + id + "/export", null, false);
+        status(200, exported);
+        assertTrue(read(exported).path("artifact").path("factors").size() >= 8);
+        assertFalse(read(exported).path("version").path("summary").path("evaluated").asBoolean());
+        if (version == 0) first = id;
+      }
+      // The persisted pointer and artifact can be loaded by a fresh registry after a restart.
+      var secondReader =
+          new com.cinematch.recommender.ModelRegistry(
+              jdbc,
+              new com.cinematch.recommender.TrainingData(
+                  System.getProperty("java.io.tmpdir") + "/cinematch-model-tests", jdbc),
+              new org.springframework.transaction.support.TransactionTemplate(
+                  new org.springframework.jdbc.datasource.DataSourceTransactionManager(
+                      jdbc.getDataSource())),
+              "",
+              false);
+      assertEquals(versions.get(1), secondReader.active().id());
+      status(200, send("POST", "/admin/recommender/models/" + first + "/activate", null, true));
+      login(regular);
+      assertFalse(
+          read(send("GET", "/recommendations/status", null, false)).path("ready").asBoolean());
+      var starters = read(send("GET", "/me/recommendations/starters", null, false));
+      assertTrue(starters.size() >= 3);
+      for (int i = 0; i < 3; i++)
+        status(
+            200,
+            send(
+                "PUT",
+                "/me/reviews/" + starters.get(i).path("id").asLong(),
+                Map.of("stars", i + 3, "body", ""),
+                true));
+      var ready = read(send("GET", "/recommendations/status", null, false));
+      assertTrue(ready.path("ready").asBoolean());
+      assertEquals(3, ready.path("mappedRatings").asInt());
+      assertFalse(ready.path("tasteGenres").isEmpty());
+      var picks = read(send("GET", "/recommendations", null, false));
+      assertFalse(picks.isEmpty());
+      assertEquals("als-hybrid", picks.get(0).path("engine").asText());
+      assertEquals(first, picks.get(0).path("modelVersion").asText());
+      status(200, send("DELETE", "/me/reviews/" + starters.get(0).path("id").asLong(), null, true));
+      assertFalse(
+          read(send("GET", "/recommendations/status", null, false)).path("ready").asBoolean());
+      login(admin);
+      status(200, send("POST", "/admin/recommender/disable", null, true));
+      assertTrue(
+          read(send("GET", "/recommendations/status", null, false)).path("modelVersion").isNull());
+      for (String id : versions)
+        status(200, send("DELETE", "/admin/recommender/models/" + id, null, true));
+    } finally {
+      jdbc.update("UPDATE recommendation_model_state SET active_model_id=NULL WHERE id=1");
+      for (String id : versions) jdbc.update("DELETE FROM recommendation_models WHERE id=?", id);
+      fixtures.add(accounts.findByUsername(regular).id());
+      fixtures.add(accounts.findByUsername(admin).id());
+      for (long id : fixtures) jdbc.update("DELETE FROM users WHERE id=?", id);
+    }
+  }
+
+  @Test
+  void externalTrainingChecksIdentityHashesAndSeparateUserNamespaces() throws Exception {
+    var root = java.nio.file.Files.createTempDirectory("cinematch-training-");
+    var directory = java.nio.file.Files.createDirectories(root.resolve("datasets/fixture"));
+    var movies =
+        jdbc.query(
+            "SELECT * FROM movies ORDER BY id LIMIT 5",
+            (r, n) -> com.cinematch.movie.MovieRows.read(r));
+    long siteUser = accounts.findByUsername(newAccount("USER")).id();
+    try {
+      StringBuilder csv = new StringBuilder("userId,movieId,rating,timestamp\n");
+      for (int u = 0; u < 5; u++)
+        for (int i = 0; i < 5; i++)
+          csv.append(siteUser + u).append(',').append(1001 + i).append(",4,1\n");
+      List<com.cinematch.recommender.TrainingData.Mapping> mappings = new ArrayList<>();
+      for (int i = 0; i < 5; i++) {
+        var m = movies.get(i);
+        mappings.add(
+            new com.cinematch.recommender.TrainingData.Mapping(
+                m.id(),
+                1001 + i,
+                m.title(),
+                m.releaseYear(),
+                m.sourceUrl(),
+                "tt000000" + (i + 1),
+                "test-fixture"));
+        jdbc.update(
+            "INSERT INTO reviews(user_id,movie_id,stars,body) VALUES(?,?,5,'')", siteUser, m.id());
+      }
+      java.nio.file.Files.writeString(directory.resolve("ratings.csv"), csv);
+      java.nio.file.Files.writeString(
+          directory.resolve("mappings.json"), json.writeValueAsString(mappings));
+      Map<String, String> hashes = new HashMap<>();
+      for (String file : List.of("ratings.csv", "mappings.json"))
+        hashes.put(
+            file,
+            HexFormat.of()
+                .formatHex(
+                    java.security.MessageDigest.getInstance("SHA-256")
+                        .digest(java.nio.file.Files.readAllBytes(directory.resolve(file)))));
+      java.nio.file.Files.writeString(
+          directory.resolve("manifest.json"),
+          json.writeValueAsString(
+              Map.of(
+                  "format",
+                  "cinematch.ratings.v1",
+                  "ratings",
+                  25,
+                  "users",
+                  5,
+                  "items",
+                  5,
+                  "sha256",
+                  hashes)));
+      var data = new com.cinematch.recommender.TrainingData(root.toString(), jdbc);
+      var loaded = data.load("fixture", UUID.randomUUID().toString());
+      long siteRows =
+          jdbc.queryForObject(
+              "SELECT COUNT(*) FROM reviews WHERE movie_id IN ("
+                  + movies.stream()
+                      .map(m -> String.valueOf(m.id()))
+                      .collect(java.util.stream.Collectors.joining(","))
+                  + ")",
+              Long.class);
+      assertEquals(25 + siteRows, loaded.ratings().size());
+      assertTrue(((Number) loaded.summary().get("users")).intValue() >= 6);
+      assertTrue(loaded.ratings().stream().anyMatch(r -> r.user() == siteUser));
+      assertEquals(5, loaded.ratings().stream().filter(r -> r.user() == -siteUser).count());
+      assertEquals(5, loaded.mappings().size());
+      assertEquals(siteRows, ((Number) loaded.summary().get("siteRatings")).longValue());
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> data.load("../fixture", UUID.randomUUID().toString()));
+      java.nio.file.Files.writeString(directory.resolve("ratings.csv"), "tampered");
+      assertThrows(
+          IllegalArgumentException.class, () -> data.load("fixture", UUID.randomUUID().toString()));
+      var m = movies.getFirst();
+      var incorrect =
+          new com.cinematch.recommender.TrainingData.Mapping(
+              m.id(), 1001, m.title(), m.releaseYear() + 1, m.sourceUrl(), "tt0000001", "test");
+      assertFalse(incorrect.matches(m));
+    } finally {
+      jdbc.update("DELETE FROM users WHERE id=?", siteUser);
+      try (var files = java.nio.file.Files.walk(root)) {
+        for (var file : files.sorted(Comparator.reverseOrder()).toList())
+          java.nio.file.Files.delete(file);
+      }
+    }
   }
 }

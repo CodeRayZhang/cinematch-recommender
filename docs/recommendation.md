@@ -2,15 +2,17 @@
 
 [返回 README](../README.md) · [部署与执行](deployment.md) · [页面操作](usage.md)
 
-版本说明：2026-10-14。当前是请求时计算的**内容偏好 + 邻域协同过滤 + 平滑口碑**混合推荐，默认返回最多 12 部电影。本文解释当前线上代码；两轮实测数据分别保存在 [基础混合推荐评估](recommendation-evaluation.md) 和 [探索模式评估与上线决策](recommendation-discovery-evaluation.md)，完整机器结果见对应 JSON。
+版本说明：2026-10-14。当前是 **可训练 ALS-WR + 内容偏好 + 邻域协同 + 平滑口碑**，默认返回最多 12 部电影。活动模型与有效个人评分不足时使用原混合推荐；最新评分会在下一次请求求解个人向量。
 
-它不需要单独训练 ALS 模型或启动 Spark、Kafka。本站账号、评分参与在线推荐；MovieLens 历史匿名评分只用于隔离的离线评估，不导入应用。
+[模型数据准备、训练与版本管理](recommendation-models.md) · [本轮独立 ALS / 融合评估](recommendation-model-evaluation.md)。此前的 [基础混合评估](recommendation-evaluation.md) 和 [探索模式评估](recommendation-discovery-evaluation.md) 保留作为历史实验记录，不表示新模型在当前目录的线上效果。
+
+全局模型使用独立线程训练，无需 Spark / Kafka。历史匿名评分保存于私有训练目录，通过经过校验的电影映射参与训练，不写入本站账号与评分表。
 
 ## 1. 请求与计算流程
 
 [![当前混合推荐流程](diagrams/04-recommendation-flow.png)](diagrams/04-recommendation-flow.svg)
 
-入口是 `GET /api/recommendations`，返回包含 `movie`、`reason`、`exploration` 的数组。查询参数：
+入口是 `GET /api/recommendations`，返回包含 `movie`、`reason`、`exploration`、`engine`、`modelVersion`、`modelApplied` 的数组。查询参数：
 
 | 参数 | 默认值 | 可选值与作用 |
 |---|---|---|
@@ -85,6 +87,19 @@ neighbor(u, i) = clip(
 
 没有足够本站用户共同评分时，此分支自然为 0，仍可使用内容与口碑推荐。当前不是把 MovieLens 的历史用户直接当成本站邻居。
 
+## 3.1 ALS-WR 模型与即时个人向量
+
+对已观察到的显式评分最小化平方误差，并分别按每位用户 / 每部电影的评分数缩放 L2 正则项。交替固定电影向量 Y 求用户向量 X，再固定 X 求 Y；使用 Cholesky 求解正定正规方程，无显式求逆。默认 rank=16、iterations=15、regularization=0.1、seed=42。
+
+持久化电影向量、参数与身份映射，不保存外部历史用户的向量。请求时仅取本人映射到当前模型的真实评分，至少 3 部时计算：
+
+```text
+x(u) = solve(sum(y(i)y(i)^T) + lambda × n(u) × I, sum(r(u,i)y(i)))
+prediction(u,i) = clamp(dot(x(u), y(i)), 0.5, 5)
+```
+
+评分编辑或删除会改变下一次 fold-in；不必等待全局重训。用户向量不跨用户缓存。隐藏、片单状态和类型偏好影响融合与排除规则，不被伪造成 ALS 星级标签。无模型、有效评分不足、无映射或电影身份已变化时回到原分支。公式依据见 [Spark 官方 ALS-WR 文档](https://spark.apache.org/docs/4.1.1/ml-collaborative-filtering.html)，当前为独立 Java 实现。
+
 ## 4. 平滑口碑与最终相关分
 
 外部参考分 r 为 0–10 分，参考评分人数 c 小于 0 时按 0 处理；固定先验为 7.5 分、1,000 份评分：
@@ -93,6 +108,14 @@ neighbor(u, i) = clip(
 quality(i) = ((r × c + 7.5 × 1000) / (c + 1000)) / 10
 score(u, i) = 0.30 × quality(i) + 0.70 × content(u,i) + 0.65 × neighbor(u,i)
 ```
+
+有效个人模型存在且该候选有身份映射时，在上述常规分上叠加：
+
+```text
+scoreWithModel(u,i) = score(u,i) + 0.45 × (prediction(u,i) − 3) / 2
+```
+
+权重 0.45 由独立验证阶段选定，测试结果与局限见 [模型评估](recommendation-model-evaluation.md)。未映射的候选不增加这一项，仍参与排序。`modelApplied` 表示这部电影实际叠加了模型分，`engine` / `modelVersion` 表示整次请求所用配置。预测星级是模型数值，不显示为匹配百分比。
 
 平滑用于减弱少量高分记录的影响。这里的评分和人数来自电影资料，本站个人星级不会实时改变它们；历史快照人数只是流行度代理。
 
@@ -133,13 +156,13 @@ novelty(i) = 0.08 × (1 − ln(1+c(i)) / ln(1+maxCandidateCount))
 
 ## 6. 推荐解释与交互反馈
 
-推荐理由按顺序选择：协同分大于 0.15 时说明相似用户信号；否则在正向内容匹配时说明偏好类型或导演；无可用正向理由时使用口碑起点 / 尝试其他故事的文案。解释是对已用信号的简要说明，不是完整因果解释。
+对有模型预测且预测 >=3.5 星的电影，优先说明模型评分信号；其余推荐理由按顺序选择：协同分大于 0.15 时说明相似用户信号；否则在正向内容匹配时说明偏好类型或导演；无可用正向理由时使用口碑起点 / 尝试其他故事的文案。解释是对已用信号的简要说明，不是完整因果解释。
 
 评分、片单、偏好和隐藏反馈影响之后的请求。前端换一组把当前已展示 ID 传给 `exclude`，最多累计 120 部；缓存批次保存在页面内存，刷新、切换筛选或观影状态变化后重置。接口不持久化这类临时排除。
 
 详情页“相似电影”是另一条简单路径：按与当前影片的类型交集数量排序，再按参考分排序，最多返回 6 部。它不使用上述个人画像和协同分支，不能套用个性化推荐的评估结果。
 
-当前观测版本为 `hybrid-v2.1`，本轮保留已评估的排序公式，加入候选 / 特征缓存及真实行为观察。登录且启用记录时返回 `requestId`，卡片实际可见后才记曝光，收藏与评分由服务端归因；游客不记录。自定义合集不参与偏好，只有想看 / 看过状态、评分、偏好与隐藏反馈参与。完整指标口径、保留期限与效果判断边界见 [本站推荐观察与评估](recommendation-observation.md)。
+原混合观测版本为 `hybrid-v2.1`；个人模型参与时使用 `als-v1:<模型 UUID>`，可在后台区分实际服务版本。登录且启用记录时返回 `requestId`，卡片实际可见后才记曝光，收藏与评分由服务端归因；游客不记录。自定义合集不参与偏好，只有想看 / 看过状态、评分、偏好与隐藏反馈参与。完整指标口径、保留期限与效果判断边界见 [本站推荐观察与评估](recommendation-observation.md)。
 
 ## 7. 代码位置与运行成本
 
@@ -149,22 +172,26 @@ novelty(i) = 0.08 × (1 − ln(1+c(i)) / ln(1+maxCandidateCount))
 | 特征、画像、协同、冷启动和重排 | [RecommendationService.java](../backend/src/main/java/com/cinematch/movie/RecommendationService.java) |
 | 电影候选、详情和相似电影 | [MovieMapper.java](../backend/src/main/java/com/cinematch/movie/MovieMapper.java)、[MovieController.java](../backend/src/main/java/com/cinematch/movie/MovieController.java) |
 | 片单、评分和邻居召回 | [LibraryMapper.java](../backend/src/main/java/com/cinematch/library/LibraryMapper.java) |
+| ALS 训练、矩阵求解与个人 fold-in | [AlsModel.java](../backend/src/main/java/com/cinematch/recommender/AlsModel.java) |
+| 训练源、快照、版本生命周期 | [TrainingData.java](../backend/src/main/java/com/cinematch/recommender/TrainingData.java)、[ModelRegistry.java](../backend/src/main/java/com/cinematch/recommender/ModelRegistry.java) |
+| 真实口味分布与模型状态 | [RecommendationLab.vue](../frontend/src/components/RecommendationLab.vue) |
 | 模式、筛选、批次与反馈界面 | [PicksView.vue](../frontend/src/views/PicksView.vue) |
 | 排序规则回归 | [RecommendationTest.java](../backend/src/test/java/com/cinematch/RecommendationTest.java) |
 | 数据切分、对照与指标输出 | [RecommendationEvaluationTest.java](../backend/src/test/java/com/cinematch/RecommendationEvaluationTest.java) |
 
-当前公共电影候选使用进程内 5 分钟缓存，后台电影变更及目录导入事务提交后主动失效。内容特征缓存一个按电影列表内容匹配的不可变快照；包含召回上限外的本人历史时会重建 / 替换，因此跨用户命中率受历史差异影响。个人偏好、邻居评分与推荐结果仍每次计算，不跨用户缓存。无需离线模型文件、向量数据库或模型训练服务。5,000 个候选、200 个邻居召回、50,000 条评分及 40 个参与计算的邻居是规模边界，不等于已完成该规模的生产并发压测。
+当前公共电影候选使用进程内 5 分钟缓存，后台电影变更及目录导入事务提交后主动失效。内容特征缓存一个按电影列表内容匹配的不可变快照；包含召回上限外的本人历史时会重建 / 替换，因此跨用户命中率受历史差异影响。个人偏好、邻居评分与推荐结果仍每次计算，不跨用户缓存。ALS 活动模型的电影向量按版本缓存在进程内，版本切换后重载；每次重新求解个人向量。无需向量数据库或独立训练服务。5,000 个候选、200 个邻居召回、50,000 条评分及 40 个参与计算的邻居是规模边界，不等于已完成该规模的生产并发压测。
 
 ## 8. 评估与复现
 
 [![公开目录导入与独立离线评估](diagrams/05-data-and-evaluation.png)](diagrams/05-data-and-evaluation.svg)
 
-图中左侧公开目录服务应用，右侧 MovieLens 服务离线评估，下方为独立的本站行为观察；电影 ID 空间相互独立。图中的 923 部是作者本机当时扩充后的数量，新克隆仓库自带 18 部样例。图表源文件与维护方法见 [图表说明](diagrams/README.md)。
+图中左侧公开目录服务应用，右侧 MovieLens 用于隔离训练与时间切分评估，下方为本站行为观察；训练时通过严格电影映射连接两个电影 ID 空间，外部用户不导入本站。图中的 923 部是作者本机当时扩充后的数量，新克隆仓库自带 18 部样例。图表源文件与维护方法见 [图表说明](diagrams/README.md)。
 
 ### 8.1 已有报告与结论
 
 | 报告 | 回答的问题 | 结论与完整数据 |
 |---|---|---|
+| [ALS 模型与融合评估](recommendation-model-evaluation.md) | 可训练模型能否改善原混合排序？ | 训练、验证和测试分离；有收益也有覆盖率代价，热门基线仍更高。 |
 | [基础混合推荐评估](recommendation-evaluation.md) | 类型累加、内容分支、完整混合算法如何比较？ | 同一批 100 位用户，NDCG@12 从 0.0641 到 0.2239；但片库覆盖率从 7.21% 降至 5.49%。[JSON](recommendation-evaluation.json) |
 | [探索模式评估与上线决策](recommendation-discovery-evaluation.md) | 增加小众曝光的代价是什么？ | 另一批 100 位用户，默认 / 探索 NDCG@12 为 0.2283 / 0.1720，长尾曝光为 10.83% / 50.75%；保留默认精选，探索由用户选择。[JSON](recommendation-discovery-evaluation.json) |
 

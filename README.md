@@ -13,7 +13,8 @@ CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发�
 | 环境准备、开发启动、JAR / MySQL 部署、管理员、备份与升级 | [详细部署与运行指南](docs/deployment.md) |
 | 注册、个人中心、片单、推荐与管理后台的操作顺序 | [页面操作与执行步骤](docs/usage.md) |
 | 当前算法、信号权重、冷启动、探索模式及评估复现 | [推荐算法与评估指南](docs/recommendation.md) |
-| 推荐效果、对照实验与局限 | [基础混合推荐评估](docs/recommendation-evaluation.md) · [探索模式评估](docs/recommendation-discovery-evaluation.md) · [本站推荐观察与评估口径](docs/recommendation-observation.md) |
+| 模型数据准备、ALS 训练、启用、回退和备份 | [可训练推荐模型操作指南](docs/recommendation-models.md) |
+| 推荐效果、对照实验与局限 | [ALS 与融合推荐评估](docs/recommendation-model-evaluation.md) · [基础混合推荐评估](docs/recommendation-evaluation.md) · [探索模式评估](docs/recommendation-discovery-evaluation.md) · [本站推荐观察与评估口径](docs/recommendation-observation.md) |
 | 公开目录获取、资料校验与来源 | [电影数据来源](docs/data-sources.md) |
 | 模块边界、图表维护与已完成验收 | [架构说明](docs/architecture.md) · [图表维护](docs/diagrams/README.md) · [验收记录](docs/verification.md) |
 
@@ -25,11 +26,17 @@ CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发�
 - 个人中心：昵称、简介、偏好类型、观影统计、评分短评分页管理、隐藏推荐恢复、观察记录暂停与清除。
 - 片单：想看 / 看过切换、搜索排序、分页、多选批量操作及撤销；移出片单保留独立评分。
 - 自定义片单：创建、重命名、介绍、影片封面、逐片备注、上下排序、批量添加及 JSON 导出；按账号隔离。
-- 推荐：内容与相似用户评分融合；精选 / 探索模式、临时类型与时长筛选、不重复换一组；支持游客冷启动，排除已收藏、评分及隐藏的影片。
-- 管理：电影增删改查、首页甄选、用户概览、首页专题与按版本 / 模式 / 用户分组的推荐观察。无默认管理员账号。
+- 推荐实验室：真实观影指纹、评分引导、模型状态与逐片推荐依据；可训练 ALS-WR 与内容、相似用户评分融合；精选 / 探索模式、临时类型与时长筛选、不重复换一组；支持游客冷启动，排除已收藏、评分及隐藏的影片。
+- 管理：电影增删改查、首页甄选、用户概览、首页专题、ALS 训练进度、模型版本启用 / 回退 / 导出，以及按版本 / 模式 / 用户分组的推荐观察。无默认管理员账号。
 - 数据：Flyway 数据库迁移；本地 H2 文件库；MySQL 8.4 与 Docker Compose 配套；新增合集、专题与推荐观察迁移。
 
 仓库自带 18 部界面种子样例，也提供公开电影资料获取、ID 校验、海报缓存与事务导入工具，见 [公开电影目录](docs/data-sources.md)。页面区分演示评分、外部数据集历史参考分和个人评分；不会将历史快照冒充实时评分。
+
+## 推荐实验室
+
+![CineMatch recommendation lab](docs/screenshots/recommendation-lab-desktop.png)
+
+图中为隔离测试账号及小型测试模型；数据来自实际评分与训练状态。当前本机可使用完整 MovieLens 历史评分训练，部署与效果评估见上方独立文档。
 
 ## 架构与功能图
 
@@ -49,13 +56,13 @@ Vue 单页应用与 Spring Boot API 组成一个可独立运行的应用，生�
 
 ### 3. 管理后台与权限边界
 
-当前使用 USER / ADMIN 两种角色。管理员可以维护电影和首页专题、查看用户概览、统计与推荐观察；用户概览只读，多级管理员和用户增删改尚未实现。
+当前使用 USER / ADMIN 两种角色。管理员可以维护电影和首页专题、查看用户概览、统计与推荐观察，并训练、启用和回退模型；用户概览只读，多级管理员和用户增删改尚未实现。
 
 [![CineMatch 管理功能：ADMIN 鉴权、电影管理、只读用户概览和统计](docs/diagrams/03-admin-features.png)](docs/diagrams/03-admin-features.svg)
 
 ### 4. 混合推荐计算流程
 
-请求时融合内容偏好、平滑口碑与邻域协同评分，再进行多样性重排；最多返回 12 部电影及推荐理由。信号、公式与模式说明见 [推荐算法指南](docs/recommendation.md)。
+离线训练 ALS 电影向量，用户最新评分即时求解个人向量；请求时融合内容偏好、平滑口碑与邻域协同评分，再进行多样性重排；最多返回 12 部电影及推荐理由。信号、公式与模式说明见 [推荐算法指南](docs/recommendation.md)。
 
 [![CineMatch 推荐流程：请求与召回、排除筛选、三路评分、融合重排和推荐解释](docs/diagrams/04-recommendation-flow.png)](docs/diagrams/04-recommendation-flow.svg)
 

@@ -5,6 +5,7 @@ import { user, ready, authOpen, notify, loadLibrary } from "../state";
 import type { Movie, MoviePage } from "../types";
 import Icon from "../components/Icon.vue";
 import TopicEditor from "../components/TopicEditor.vue";
+import ModelManager from "../components/ModelManager.vue";
 import RecommendationMetrics from "../components/RecommendationMetrics.vue";
 const stats = ref<Record<string, number>>({}),
   movies = ref<Movie[]>([]),
@@ -179,7 +180,12 @@ async function remove(movie: Movie) {
             :class="{ active: tab === 'metrics' }"
             @click="tab = 'metrics'"
           >
-            推荐观察
+            推荐观察</button
+          ><button
+            :class="{ active: tab === 'models' }"
+            @click="tab = 'models'"
+          >
+            推荐模型
           </button>
         </div>
         <form
@@ -197,6 +203,7 @@ async function remove(movie: Movie) {
       <p v-if="error" class="form-error" role="alert">
         {{ error }}<button class="text-link" @click="load">重试</button>
       </p>
+      <ModelManager v-if="tab === 'models'" />
       <TopicEditor v-if="tab === 'topics'" />
       <RecommendationMetrics v-if="tab === 'metrics'" />
       <div v-if="tab === 'movies'" class="table-scroll" :aria-busy="busy">

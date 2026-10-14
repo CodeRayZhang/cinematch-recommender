@@ -14,7 +14,7 @@
   <rect x="64" y="174" width="712" height="84" rx="16" fill="#e8efe5" stroke="#d6dfd7" stroke-width="1.5" />
   <text x="88" y="225" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="29" fill="#426955" text-anchor="start" font-weight="600">A / 公开电影资料 → 本地片库</text>
   <rect x="824" y="174" width="712" height="84" rx="16" fill="#faeee5" stroke="#d6dfd7" stroke-width="1.5" />
-  <text x="848" y="225" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="29" fill="#d66b4e" text-anchor="start" font-weight="600">B / MovieLens → 独立评估报告</text>
+  <text x="848" y="225" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="29" fill="#d66b4e" text-anchor="start" font-weight="600">B / MovieLens → 模型与独立评估</text>
   <polyline points="420,258 420,296" fill="none" stroke="#426955" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="420.00,296.00 414.50,284.00 425.50,284.00" fill="#426955" />
   <rect x="64" y="296" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
@@ -56,35 +56,35 @@
   <rect x="846" y="321" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="866" y="342" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">独立历史数据 · MovieLens 1M</text>
   <text x="848" y="380" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">1,000,209 条匿名评分 + 电影类型元数据</text>
-  <text x="848" y="410" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">独立电影 ID 空间，不映射到本站电影 ID</text>
+  <text x="848" y="410" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">用户空间隔离；通过 IMDb / 标题 / 年份映射电影</text>
   <polyline points="1180,436 1180,474" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="1180.00,474.00 1174.50,462.00 1185.50,462.00" fill="#d66b4e" />
   <rect x="824" y="474" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="846" y="499" width="5" height="25" rx="2" fill="#d66b4e" />
-  <text x="866" y="520" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">全局按时间切分 · 80 / 20</text>
-  <text x="848" y="558" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">800,168 条训练 / 200,041 条测试</text>
+  <text x="866" y="520" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">全局时间切分 · 70 / 10 / 20</text>
+  <text x="848" y="558" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">70% 训练、10% 验证选权重、20% 冻结测试</text>
   <text x="848" y="588" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">参考分、流行度、画像与邻居仅由训练数据计算</text>
   <polyline points="1180,614 1180,652" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="1180.00,652.00 1174.50,640.00 1185.50,640.00" fill="#d66b4e" />
   <rect x="824" y="652" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="846" y="677" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="866" y="698" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">真实推荐器与固定对照</text>
-  <text x="848" y="736" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">默认混合排序 / 双探索实验 / 探索模式</text>
-  <text x="848" y="766" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">100 位新样本用户，与上一轮评估用户不重叠</text>
+  <text x="848" y="736" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">热门榜 / 原混合 / ALS / ALS 融合</text>
+  <text x="848" y="766" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">每阶段最多 100 位用户；并非全新独立数据集</text>
   <polyline points="1180,792 1180,830" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="1180.00,830.00 1174.50,818.00 1185.50,818.00" fill="#d66b4e" />
   <rect x="824" y="830" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="846" y="855" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="866" y="876" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">离线指标与配对比较</text>
-  <text x="848" y="914" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">Precision / Recall / NDCG@12、命中率</text>
-  <text x="848" y="944" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">长尾曝光、覆盖率、类型多样性与 bootstrap</text>
+  <text x="848" y="914" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">Precision / Recall / NDCG@12、评分 RMSE</text>
+  <text x="848" y="944" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">覆盖率、类型多样性与配对 bootstrap</text>
   <polyline points="1180,970 1180,1008" fill="none" stroke="#d66b4e" stroke-width="2.5" stroke-linejoin="round" />
   <polygon points="1180.00,1008.00 1174.50,996.00 1185.50,996.00" fill="#d66b4e" />
   <rect x="824" y="1008" width="712" height="140" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="846" y="1033" width="5" height="25" rx="2" fill="#d66b4e" />
   <text x="866" y="1054" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="25" fill="#d66b4e" text-anchor="start" font-weight="600">输出报告与代码决策</text>
   <text x="848" y="1092" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">JSON 指标 + Markdown 解释，可重复运行</text>
-  <text x="848" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">保留默认排序；探索模式由用户主动选择</text>
+  <text x="848" y="1122" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">采用 ALS 融合；纯 ALS 不采用；热门榜仍更高</text>
   <rect x="64" y="1188" width="1472" height="68" rx="12" fill="#1b3028" />
   <text x="800" y="1231" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="600">来源快照、完整片库与海报仅保存在本地；评估不写入应用账号、片单或评分。</text>
   <rect x="64" y="1290" width="1472" height="170" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />

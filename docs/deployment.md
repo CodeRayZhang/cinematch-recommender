@@ -317,3 +317,7 @@ bash scripts/mvn.sh -Dcinematch.mysql=true verify
 它对 H2 与真实 MySQL 运行相同 HTTP 契约，包括全部 Flyway 迁移、权限、分页、合集、观察及事务回滚。没有这个参数时 MySQL 契约跳过，不代表已经验证 MySQL。CI 另外执行 `scripts/verify_container.py`，对实际 Compose 镜像检查深层路由、健康状态、海报挂载，并重启数据库及应用检查用户、评分和合集持久化；该脚本写入测试账号，专供隔离验收环境，不要指向个人数据服务。
 
 `GET /api/health` 执行轻量数据库连通检查，成功为 `200 {"status":"UP"}`，不可用为 503。它不返回连接串或异常详情。当前仍为单实例内存会话，重启后重新登录即可读取持久化记录。
+
+## 推荐模型训练与升级
+
+V7 新增模型版本与活动指针；升级前停服务备份数据库，模型权重随数据库保存，训练源与快照单独备份。Compose 的 `model-data` 卷持久化 `.data/recommender`。准备历史评分、建立电影映射、后台训练、启用和回退的完整步骤见 [可训练推荐模型](recommendation-models.md)。普通启动不自动训练；原混合推荐在没有模型时继续可用。

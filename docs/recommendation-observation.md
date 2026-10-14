@@ -1,6 +1,6 @@
 # 本站推荐观察与评估
 
-本轮观测版本：`hybrid-v2.1`。排序公式沿用 [推荐算法指南](recommendation.md)，新增的是缓存和行为观测，并未用虚构线上数据调参。历史 MovieLens 结果保留在独立 [探索评估](recommendation-discovery-evaluation.md) 与 [基线评估](recommendation-evaluation.md) 中。
+观测按实际服务版本分组：原混合为 `hybrid-v2.1`，活动模型参与时为 `als-v1:<模型 UUID>`。训练成功不表示效果达标；[ALS 与融合评估](recommendation-model-evaluation.md) 是独立历史数据实验，本站观察来自真实曝光和行为。
 
 ## 1. 记录什么
 

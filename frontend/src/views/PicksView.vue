@@ -6,6 +6,7 @@ import { user, ready, library, authOpen, notify } from "../state";
 import type { Pick } from "../types";
 import { MOVIE_GENRES } from "../genres";
 import Icon from "../components/Icon.vue";
+import RecommendationLab from "../components/RecommendationLab.vue";
 import MovieCard from "../components/MovieCard.vue";
 const route = useRoute(),
   router = useRouter();
@@ -133,20 +134,7 @@ onUnmounted(() => controller?.abort());
 </script>
 <template>
   <div class="page-container inner-page picks-page">
-    <section class="personal-intro">
-      <div>
-        <p class="eyebrow">
-          <Icon name="Sparkles" :size="15" /> A CINEMA THAT KNOWS YOU
-        </p>
-        <h1>
-          熟悉的心动，<br /><span class="serif-accent">也来点意外。</span>
-        </h1>
-        <p>从你的口味出发，给没见过的故事留个位置。</p>
-      </div>
-      <span class="orbital-art" aria-hidden="true"
-        ><i /><i /><Icon name="Sparkles" :size="30"
-      /></span>
-    </section>
+    <RecommendationLab />
     <section class="recommendation-controls" aria-label="本次推荐设置">
       <div class="recommendation-control-top">
         <div>
@@ -309,6 +297,12 @@ onUnmounted(() => controller?.abort());
           :request-id="pick.requestId"
         />
         <div class="pick-footnote">
+          <span
+            v-if="pick.modelApplied"
+            class="model-pick-badge"
+            title="这部电影的排序结合了协同模型对你历史评分的计算"
+            >协同发现</span
+          >
           <span v-if="pick.exploration" class="exploration-badge"
             ><Icon name="Sparkles" :size="11" />探索发现</span
           ><button

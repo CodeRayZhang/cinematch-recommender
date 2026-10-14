@@ -36,9 +36,9 @@
   <text x="472" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">collection</text>
   <text x="472" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">合集 / 观影记录</text>
   <rect x="640" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
-  <text x="656" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">推荐排序</text>
-  <text x="656" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">movie</text>
-  <text x="656" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">内容 / 邻域</text>
+  <text x="656" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">推荐模型</text>
+  <text x="656" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">recommender</text>
+  <text x="656" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="17" fill="#53665d" text-anchor="start" font-weight="400">ALS / 画像</text>
   <rect x="824" y="534" width="168" height="126" rx="10" fill="#f4f5ef" stroke="#d6dfd7" stroke-width="1.5" />
   <text x="840" y="569" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#1b3028" text-anchor="start" font-weight="600">内容管理</text>
   <text x="840" y="600" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="18" fill="#426955" text-anchor="start" font-weight="400">admin</text>
@@ -79,5 +79,5 @@
   <rect x="822" y="879" width="5" height="25" rx="2" fill="#426955" />
   <text x="842" y="900" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="26" fill="#426955" text-anchor="start" font-weight="600">图片与本地文件</text>
   <text x="824" y="938" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">JAR 内静态资源 + 独立 catalog-posters 目录</text>
-  <text x="824" y="968" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">来源快照、图片校验记录、备份保存在本地</text>
+  <text x="824" y="968" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="21" fill="#53665d" text-anchor="start" font-weight="400">来源快照、模型训练源 / 运行快照与备份</text>
 </svg>

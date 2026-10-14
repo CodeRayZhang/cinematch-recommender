@@ -45,18 +45,18 @@
   <text x="222.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#426955" text-anchor="middle" font-weight="600">Movie CRUD</text>
   <rect x="576" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="598" y="485" width="5" height="25" rx="2" fill="#d66b4e" />
-  <text x="618" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#d66b4e" text-anchor="start" font-weight="600">用户概览 · 只读</text>
-  <text x="600" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">查看最近 100 位用户</text>
-  <text x="600" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">账号、昵称、角色</text>
-  <text x="600" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">注册时间</text>
-  <text x="600" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">不返回密码或密码哈希</text>
+  <text x="618" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#d66b4e" text-anchor="start" font-weight="600">推荐模型管理</text>
+  <text x="600" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">选择训练源与 ALS 参数</text>
+  <text x="600" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">异步训练、进度、错误与摘要</text>
+  <text x="600" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">启用 / 回退 / 停用 / 导出</text>
+  <text x="600" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">最多十个版本；活动模型保护</text>
   <rect x="600" y="688" width="220" height="32" rx="8" fill="#faeee5" />
-  <text x="710.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#d66b4e" text-anchor="middle" font-weight="600">Read-only users</text>
+  <text x="710.0" y="711" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="16" fill="#d66b4e" text-anchor="middle" font-weight="600">Model lifecycle</text>
   <rect x="1064" y="460" width="448" height="282" rx="16" fill="#ffffff" stroke="#d6dfd7" stroke-width="1.5" />
   <rect x="1086" y="485" width="5" height="25" rx="2" fill="#426955" />
-  <text x="1106" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">统计与推荐观察</text>
-  <text x="1088" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">电影 / 用户 / 评分 / 片单计数</text>
-  <text x="1088" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">按版本、模式、评分历史分组</text>
+  <text x="1106" y="506" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="27" fill="#426955" text-anchor="start" font-weight="600">观察与只读概览</text>
+  <text x="1088" y="544" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">用户概览与电影 / 评分 / 片单计数</text>
+  <text x="1088" y="574" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">按模型版本、模式、评分历史分组</text>
   <text x="1088" y="604" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">曝光 / 点击 / 收藏 / 评分</text>
   <text x="1088" y="634" font-family="'PingFang SC','Noto Sans CJK SC','Microsoft YaHei','Heiti SC',sans-serif" font-size="22" fill="#53665d" text-anchor="start" font-weight="400">7 / 30 / 90 天真实保留记录</text>
   <rect x="1088" y="688" width="220" height="32" rx="8" fill="#e8efe5" />

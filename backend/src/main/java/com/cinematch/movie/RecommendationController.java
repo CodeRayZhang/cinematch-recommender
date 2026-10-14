@@ -2,6 +2,7 @@ package com.cinematch.movie;
 
 import com.cinematch.auth.*;
 import com.cinematch.library.LibraryMapper;
+import com.cinematch.recommender.ModelPersonalizer;
 import java.security.Principal;
 import java.util.*;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class RecommendationController {
   private final ProfileMapper profiles;
   private final FeedbackMapper feedback;
   private final RecommendationObservation observations;
+  private final ModelPersonalizer models;
 
   public RecommendationController(
       CatalogCache movies,
@@ -25,7 +27,8 @@ public class RecommendationController {
       RecommendationService service,
       ProfileMapper profiles,
       FeedbackMapper feedback,
-      RecommendationObservation observations) {
+      RecommendationObservation observations,
+      ModelPersonalizer models) {
     this.movies = movies;
     this.library = library;
     this.accounts = accounts;
@@ -33,9 +36,17 @@ public class RecommendationController {
     this.profiles = profiles;
     this.feedback = feedback;
     this.observations = observations;
+    this.models = models;
   }
 
-  public record Pick(Movie movie, String reason, boolean exploration, String requestId) {}
+  public record Pick(
+      Movie movie,
+      String reason,
+      boolean exploration,
+      String requestId,
+      String engine,
+      String modelVersion,
+      boolean modelApplied) {}
 
   @GetMapping("/api/recommendations")
   public List<Pick> recommendations(
@@ -68,6 +79,7 @@ public class RecommendationController {
         new RecommendationService.Options(mode.equals("explore"), selected, maxRuntime, skipped);
     List<RecommendationService.Pick> result;
     String requestId = null;
+    ModelPersonalizer.Context context = new ModelPersonalizer.Context(null, 0, 0, Map.of());
     if (principal == null)
       result =
           service.rank(
@@ -82,10 +94,12 @@ public class RecommendationController {
     else {
       long id = accounts.findByUsername(principal.getName()).id();
       var reviews = library.reviews(id);
+      var history = library.preferenceMovies(id);
+      context = models.context(movies.candidates(), history, reviews);
       result =
           service.rank(
               movies.candidates(),
-              library.preferenceMovies(id),
+              history,
               library.entries(id),
               reviews,
               Arrays.stream(profiles.find(id).preferredGenres().split(","))
@@ -93,13 +107,71 @@ public class RecommendationController {
                   .toList(),
               new HashSet<>(feedback.hiddenIds(id)),
               library.neighborRatings(id),
-              options);
-      requestId = observations.record(id, mode, reviews.size(), result);
+              options,
+              context.scores());
+      requestId = observations.record(id, mode, reviews.size(), result, context.version());
     }
     String token = requestId;
+    var current = context;
     return result.stream()
-        .map(p -> new Pick(p.movie(), p.reason(), p.exploration(), token))
+        .map(
+            p ->
+                new Pick(
+                    p.movie(),
+                    p.reason(),
+                    p.exploration(),
+                    token,
+                    current.engine(),
+                    current.ready() ? current.modelVersion() : null,
+                    current.scores().containsKey(p.movie().id())))
         .toList();
+  }
+
+  @GetMapping("/api/recommendations/status")
+  public Object status(Principal principal) {
+    List<LibraryMapper.Review> reviews = List.of();
+    List<Movie> history = List.of();
+    if (principal != null) {
+      long id = accounts.findByUsername(principal.getName()).id();
+      reviews = library.reviews(id);
+      history = library.preferenceMovies(id);
+    }
+    var context = models.context(movies.candidates(), history, reviews);
+    Set<Long> rated = new HashSet<>();
+    reviews.forEach(r -> rated.add(r.movieId()));
+    Map<String, Integer> genres = new TreeMap<>();
+    for (var movie : history)
+      if (rated.contains(movie.id()))
+        for (String genre : movie.genres().split(","))
+          if (!genre.isBlank()) genres.merge(genre.strip(), 1, Integer::sum);
+    Map<String, Object> result = new LinkedHashMap<>();
+    result.put(
+        "tasteGenres",
+        genres.entrySet().stream()
+            .map(e -> Map.of("name", e.getKey(), "count", e.getValue()))
+            .toList());
+    result.put("model", models.details(context.modelVersion()));
+    result.put("engine", context.engine());
+    result.put("modelVersion", context.modelVersion());
+    result.put("mappedRatings", context.mappedRatings());
+    result.put("mappedMovies", context.mappedMovies());
+    result.put("minimumRatings", ModelPersonalizer.MINIMUM_RATINGS);
+    result.put("ready", context.ready());
+    result.put(
+        "message",
+        context.ready()
+            ? "协同模型已根据你的最新评分参与推荐"
+            : context.modelVersion() == null
+                ? "当前使用内容偏好与相似用户推荐"
+                : "为至少 " + ModelPersonalizer.MINIMUM_RATINGS + " 部模型覆盖的电影评分，建立你的观影口味");
+    return result;
+  }
+
+  @GetMapping("/api/me/recommendations/starters")
+  public Object starters(Principal principal) {
+    long id = accounts.findByUsername(principal.getName()).id();
+    return models.starters(
+        movies.candidates(), library.reviews(id), new HashSet<>(feedback.hiddenIds(id)));
   }
 
   private ResponseStatusException bad(String message) {

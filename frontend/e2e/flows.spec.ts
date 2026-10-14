@@ -311,3 +311,82 @@ test("切换账号后延迟响应不能恢复前一用户的片单", async ({ pa
     page.getByText("前一个账号的私密片单", { exact: true }),
   ).toHaveCount(0);
 });
+
+test("训练版本启用、观影指纹与即时协同推荐", async ({ page }, testInfo) => {
+  test.setTimeout(90000);
+  const request = page.request;
+  const films = (await (await request.get("/api/movies?size=8")).json()).items;
+  for (let i = 0; i < 5; i++) {
+    await register(request);
+    for (let j = 0; j < films.length; j++)
+      await mutation(request, `/me/reviews/${films[j].id}`, "PUT", {
+        stars: 1 + ((i + j) % 5),
+        body: "",
+      });
+    await mutation(request, "/auth/logout", "POST");
+  }
+  await login(request, "e2e_admin", "E2e-only-password-842!");
+  await page.goto("/admin");
+  await page.getByRole("button", { name: "推荐模型", exact: true }).click();
+  await page.getByLabel("向量维度", { exact: true }).fill("2");
+  await page.getByLabel("迭代次数", { exact: true }).fill("2");
+  await page.getByRole("button", { name: "开始训练", exact: true }).click();
+  const version = page.locator(".model-version").first();
+  await expect(version.getByText("训练完成", { exact: true })).toBeVisible({
+    timeout: 25000,
+  });
+  await version
+    .getByRole("button", { name: "启用此版本", exact: true })
+    .click();
+  await expect(version.getByText("当前启用", { exact: true })).toBeVisible();
+  const model = (
+    await (await request.get("/api/admin/recommender/models")).json()
+  ).find((m: { active: boolean }) => m.active);
+  await noOverflow(page);
+  await page.screenshot({
+    path: testInfo.outputPath("models.png"),
+    fullPage: true,
+  });
+  await mutation(request, "/auth/logout", "POST");
+  await register(request);
+  await page.goto("/picks");
+  await expect(
+    page.getByRole("region", { name: "推荐实验室", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "建立我的观影指纹" }).click();
+  for (let i = 0; i < 3; i++) {
+    const first = page.locator(".taste-movie").first();
+    await expect(first).toBeVisible();
+    await first.click();
+    const dialog = page.getByRole("dialog", { name: /.*/ }).filter({
+      has: page.getByRole("button", { name: "保存评分", exact: true }),
+    });
+    await expect(dialog).toBeVisible();
+    await dialog
+      .getByRole("button", { name: `${i + 3} 星`, exact: true })
+      .click();
+    await dialog.getByRole("button", { name: "保存评分", exact: true }).click();
+    await expect(dialog).not.toBeVisible();
+    await expect(page.locator(".lab-fingerprint-caption strong")).toContainText(
+      `${i + 1} 部已评分`,
+    );
+    await expect(page.locator(".taste-progress")).toContainText(
+      i === 2 ? "协同模型已参与推荐" : `已评分 ${i + 1} / 3 部`,
+    );
+  }
+  const picks = await (await request.get("/api/recommendations")).json();
+  expect(picks[0].engine).toBe("als-hybrid");
+  expect(picks[0].modelVersion).toBe(model.id);
+  await expect(page.locator(".lab-radar-data")).toHaveCount(1);
+  await expect(page.locator(".lab-radar-count").first()).toContainText("部");
+  await page.getByRole("button", { name: "收起选片", exact: true }).click();
+  await noOverflow(page);
+  await expect(page.locator(".toast-message")).not.toBeVisible();
+  await page
+    .locator(".recommendation-lab")
+    .screenshot({ path: testInfo.outputPath("recommendation-lab.png") });
+  await mutation(request, "/auth/logout", "POST");
+  await login(request, "e2e_admin", "E2e-only-password-842!");
+  await mutation(request, "/admin/recommender/disable", "POST");
+  await mutation(request, `/admin/recommender/models/${model.id}`, "DELETE");
+});

@@ -15,7 +15,7 @@ RUN mvn -B -f backend/pom.xml verify
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-RUN groupadd --system cinematch && useradd --system --gid cinematch cinematch && mkdir /app/.data && chown -R cinematch:cinematch /app
+RUN groupadd --system cinematch && useradd --system --gid cinematch cinematch && mkdir -p /app/.data/recommender && chown -R cinematch:cinematch /app
 COPY --from=api /workspace/backend/target/cinematch-2.0.0-SNAPSHOT.jar /app/app.jar
 USER cinematch
 ENV BIND_ADDRESS=0.0.0.0

@@ -45,6 +45,9 @@ export interface MoviePage {
   size: number;
 }
 export interface Pick {
+  modelApplied: boolean;
+  engine: "hybrid" | "als-hybrid";
+  modelVersion: string | null;
   requestId?: string | null;
   movie: Movie;
   reason: string;

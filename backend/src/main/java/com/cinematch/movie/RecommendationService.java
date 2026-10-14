@@ -61,6 +61,47 @@ public class RecommendationService {
       Set<Long> hidden,
       List<LibraryMapper.Signal> peers,
       Options options) {
+    return rank(
+        candidates, saved, entries, reviews, preferredGenres, hidden, peers, options, Map.of());
+  }
+
+  public List<Pick> rank(
+      List<Movie> candidates,
+      List<Movie> saved,
+      List<LibraryMapper.Entry> entries,
+      List<LibraryMapper.Review> reviews,
+      List<String> preferredGenres,
+      Set<Long> hidden,
+      List<LibraryMapper.Signal> peers,
+      Options options,
+      Map<Long, Double> modelPredictions) {
+    return rank(
+        candidates,
+        saved,
+        entries,
+        reviews,
+        preferredGenres,
+        hidden,
+        peers,
+        options,
+        modelPredictions,
+        com.cinematch.recommender.ModelPersonalizer.MODEL_WEIGHT);
+  }
+
+  /** Explicit weight overload supports validation without changing the deployed default. */
+  public List<Pick> rank(
+      List<Movie> candidates,
+      List<Movie> saved,
+      List<LibraryMapper.Entry> entries,
+      List<LibraryMapper.Review> reviews,
+      List<String> preferredGenres,
+      Set<Long> hidden,
+      List<LibraryMapper.Signal> peers,
+      Options options,
+      Map<Long, Double> modelPredictions,
+      double modelWeight) {
+    if (!Double.isFinite(modelWeight) || modelWeight < 0 || modelWeight > 10)
+      throw new IllegalArgumentException("Invalid model weight");
     Map<Long, Integer> ratings = new HashMap<>();
     reviews.forEach(r -> ratings.put(r.movieId(), r.stars()));
     Map<Long, String> statuses = new HashMap<>();
@@ -122,6 +163,8 @@ public class RecommendationService {
           contextualColdStart
               ? .85 * quality + .15 * content
               : .30 * quality + .70 * content + .65 * neighbor;
+      Double prediction = modelPredictions.get(m.id());
+      if (prediction != null) score += modelWeight * (prediction - 3) / 2;
       String genre =
           tokens(m.genres()).stream()
               .filter(g -> genreAffinity.getOrDefault(g, 0.0) > 0)
@@ -144,6 +187,7 @@ public class RecommendationService {
                   : director != null && content > 0
                       ? "延续你喜欢的导演：" + director
                       : negative.isEmpty() ? "从值得一看的电影开始" : "换一种故事，也许更合你意";
+      if (modelWeight > 0 && prediction != null && prediction >= 3.5) reason = "根据你的评分，协同模型发现了这部电影";
       remaining.add(new Scored(m, score, reason, false));
     }
     List<Scored> selected = new ArrayList<>();
