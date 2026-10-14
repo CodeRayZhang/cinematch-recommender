@@ -92,4 +92,7 @@
 - 后端覆盖合集所有者隔离、批量添加原子性、删除合集保留评分、服务端分页、原子撤销、缓存提交后失效、观察去重与归因、保留 200 次请求边界及 90 天清理。
 - 3 项 Python 目录校验测试、18 条示例 JSON 校验和五组架构 SVG / PNG 来源一致性检查通过。
 - 重新运行真实 MovieLens 1M 探索评估：数据摘要、100 名用户样本、全部效果指标及 bootstrap 区间与既有探索报告完全一致；仅计时不同。新原始结果另存 [本轮评估 JSON](recommendation-maintenance-evaluation.json)，原报告不覆盖。本轮没有改变排序权重，也不依据单机计时差异宣称性能提升。
-- GitHub CI 已配置真实 MySQL 8.4 HTTP 契约、桌面 / 手机 Chromium E2E、实际 Docker Compose 镜像构建、静态海报挂载、数据库 / 应用重启持久化验证；执行结果待本次推送后记录。
+- 代码提交 `8cabe54cb164df85441aa24361d107e1fecb19e0` 的 [GitHub Actions 验收](https://github.com/CodeRayZhang/cinematch-recommender/actions/runs/38498611814) 全部通过：57 项后端测试（含 20 项真实 MySQL 8.4 HTTP 契约）、14 项桌面 / 手机 Chromium E2E。CI 未提供 MovieLens 文件，因此只跳过 1 项大型评估；该项已在本地单独执行通过。
+- 同一 CI 实际构建并启动 Docker Compose：验证 18 部种子电影、注册登录、合集及评分写入、深层 SPA 路由、只读海报挂载；停止应用、重启 MySQL 后重新登录，合集和评分仍保留。测试使用临时 Compose 项目及独立命名卷，结束后清理。
+- 本地升级前停机备份至 `.cache/backups/before-collections-20261014-1001/`；V6 迁移后原有电影、用户、片单、评分、个人资料、隐藏反馈 6 张表逐表 SHA-256 一致，923 部电影保留。当时个人交互表为空，已有用户数据的保护另由 H2 / MySQL 契约覆盖。新预览使用独立运行 JAR，`/api/health`、电影详情与合集深层路由正常。
+- 上述验收完成后的提交仅补写本记录，不改变已验收的应用、测试、图表或部署配置。
