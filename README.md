@@ -4,6 +4,14 @@
 
 CineMatch 是一个可持续维护的个人电影推荐系统，围绕电影发现、私人片单和观影感受设计。新版采用 Vue 3 + TypeScript + Spring Boot 4 + Java 21，用户站与管理后台共用一套 API。
 
+## 从这里开始
+
+[运行系统](docs/deployment.md) · [查看页面](docs/screenshots) · [理解架构](docs/architecture.md) · [复现评估](docs/recommendation-model-evaluation.md)
+
+**当前边界：** 仓库包含 923 部电影；现有严格 MovieLens 映射为 90 / 923 部，其余使用原混合推荐。已有离线评估中热门榜的 NDCG、Precision 与 Recall 仍高于融合方案；完整 MovieLens 目录的指标不等于当前中文片库的线上效果。详见 [评估结果与局限](docs/recommendation-model-evaluation.md)。
+
+**接下来优先改进：** 片库映射覆盖、当前候选集上的对照评估，以及可重复的演示和运行验证。
+
 ![CineMatch desktop preview](docs/screenshots/desktop.jpg)
 
 ## 文档导航
