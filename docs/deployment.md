@@ -19,7 +19,7 @@
 本机开发 / 打包需要 Node.js 22.12+（项目 CI 使用 Node 22）、npm、JDK 21、Maven 3.9+ 和 Git。数据获取、片库校验与图表检查另外需要 Python 3.9+。仅走容器方式时，宿主机准备 Git、Docker Engine / Desktop 和 Compose v2 即可。
 
 ```sh
-git clone git@github.com:CodeRayZhang/cinematch-recommender.git
+git clone git@github.com:RayXBuilds/cinematch-recommender.git
 cd cinematch-recommender
 node --version
 npm --version

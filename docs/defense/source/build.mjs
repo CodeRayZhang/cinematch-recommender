@@ -10,7 +10,7 @@ const {applyPresentationChartFont}=await import(path.join(SKILL,'container_tools
 const A=path.join(ROOT,'assets'), B=path.join(ROOT,'.build');
 const FONT='Arial Unicode MS';
 const C={bg:'#F4F4EE',ink:'#183128',green:'#426955',pale:'#DEE7D8',muted:'#5D6C63',orange:'#D86F50',dark:'#141B18',white:'#F7F7F0',line:'#B8C6B7'};
-const REPO='https://github.com/CodeRayZhang/cinematch-recommender';
+const REPO='https://github.com/RayXBuilds/cinematch-recommender';
 const SRC=REPO+'/blob/868059a/';
 const doc=n=>SRC+'docs/'+n;
 const screenshotNote='页面截图来自独立临时 H2 演示实例，使用仓库 923 部片库与真实 MovieLens 1M 训练模型。演示账号及 6 条个人评分专为答辩建立，不代表真实线上用户或流量。截图日期：2026-10-14。电影图片来源见 '+doc('artwork.md')+' 与 '+SRC+'data/catalog/NOTICE.md';
@@ -67,7 +67,7 @@ text(s,'可训练的 ALS-WR 与多信号融合推荐',58,489,605,85,27,C.pale);
 }
 // 02 Legacy comparison.
 {
-const s=slide('项目背景与重构目标','01  SYSTEM',40,'旧项目已经包含电影浏览、用户管理和基于 ALS 的推荐探索，也采用了 SSM 与大数据组件。本次目标是将毕业设计变成可以长期维护的个人项目，因此选用单进程 Java 服务、独立前端源码和可选 MySQL，降低部署负担。这里不是将旧系统的架构图换一个名称，而是重新实现业务和训练链路。原仓库完整保留，新系统不自动导入旧账号、旧评分或旧模型。',['https://github.com/CodeRayZhang/Movie_Recommend',SRC+'README.md']);
+const s=slide('项目背景与重构目标','01  SYSTEM',40,'旧项目已经包含电影浏览、用户管理和基于 ALS 的推荐探索，也采用了 SSM 与大数据组件。本次目标是将毕业设计变成可以长期维护的个人项目，因此选用单进程 Java 服务、独立前端源码和可选 MySQL，降低部署负担。这里不是将旧系统的架构图换一个名称，而是重新实现业务和训练链路。原仓库完整保留，新系统不自动导入旧账号、旧评分或旧模型。',['https://github.com/RayXBuilds/Movie_Recommend',SRC+'README.md']);
 table(s,[['维度','原毕业设计','CineMatch'],['应用架构','SSM、JSP、MySQL','Vue 3、Spring Boot 4、Java 21'],['推荐与运行','Spark ALS 与大数据组件','Java ALS-WR、请求时个人化'],['项目维护','历史模块与环境耦合','独立仓库、迁移脚本、自动验收'],['数据继承','原系统账号与模型','新账号、新数据库、新训练链路']],56,181,1168,355,[170,450,548],25);
 note(s,'原项目完整保留。新版无需启动旧项目及 Spark / Hadoop。',587);
 }
@@ -183,7 +183,7 @@ note(s,'训练成功、离线指标提升和线上用户满意度，是三个需
 }
 // 16 Engineering.
 {
-const s=slide('工程验证与部署方式','06  ENGINEERING',40,'算法之外，系统还需要保证用户操作与数据持久化可靠。最近一次完整流水线通过了六十四项后端测试、十六项桌面与手机浏览器测试以及六项 Python 检查。后端包含真实 MySQL 的 HTTP 验证，两个可选离线评估测试另行运行。Compose 验收检查了模型启用状态和用户评分片单在数据库及应用重启后保留。部署既支持本地 H2，也支持 Docker 加 MySQL。这些验证说明功能与持久化可复现，不等同于高并发压测。',[doc('verification.md'),'https://github.com/CodeRayZhang/cinematch-recommender/actions/runs/38586333537',doc('deployment.md')]);
+const s=slide('工程验证与部署方式','06  ENGINEERING',40,'算法之外，系统还需要保证用户操作与数据持久化可靠。最近一次完整流水线通过了六十四项后端测试、十六项桌面与手机浏览器测试以及六项 Python 检查。后端包含真实 MySQL 的 HTTP 验证，两个可选离线评估测试另行运行。Compose 验收检查了模型启用状态和用户评分片单在数据库及应用重启后保留。部署既支持本地 H2，也支持 Docker 加 MySQL。这些验证说明功能与持久化可复现，不等同于高并发压测。',[doc('verification.md'),'https://github.com/RayXBuilds/cinematch-recommender/actions/runs/38586333537',doc('deployment.md')]);
 text(s,'64',56,195,330,105,75,C.green,true);text(s,'后端测试通过',56,309,330,47,29,C.ink);text(s,'含真实 MySQL HTTP 验证\n另有 2 项可选评估跳过',56,375,330,95,24,C.muted);
 text(s,'16',470,195,330,105,75,C.green,true);text(s,'浏览器测试通过',470,309,330,47,29,C.ink);text(s,'桌面与手机\n搜索、片单、推荐、后台',470,375,330,95,24,C.muted);
 text(s,'6',884,195,330,105,75,C.green,true);text(s,'Python 检查通过',884,309,330,47,29,C.ink);text(s,'片库、数据准备与校验\n文件清单及身份映射',884,375,330,95,24,C.muted);
@@ -251,8 +251,8 @@ table(s,[['问题','回答要点'],['为什么不用 Spark？','当前规模采�
 }
 // 24 references.
 {
-const s=slide('附录 F  资料与复现入口','APPENDIX',0,'本演示依据 CineMatch 仓库 868059a 的实现与文档。完整评估、测试 JSON、数据来源和部署命令均在仓库中。旧项目仅用于说明历史背景，不作为新版已经实现功能的证据。截图来自隔离演示环境，电影海报和封面属于第三方内容，其来源和使用说明见项目 attribution 文件。',['https://github.com/CodeRayZhang/Movie_Recommend',REPO,doc('recommendation-model-evaluation.md'),doc('recommendation-model-test.json'),doc('deployment.md'),doc('recommendation-models.md'),'https://grouplens.org/datasets/movielens/1m/']);
-text(s,'项目代码',56,176,1168,43,29,C.green,true);text(s,'github.com/CodeRayZhang/cinematch-recommender',56,232,1168,48,32,C.ink);
+const s=slide('附录 F  资料与复现入口','APPENDIX',0,'本演示依据 CineMatch 仓库 868059a 的实现与文档。完整评估、测试 JSON、数据来源和部署命令均在仓库中。旧项目仅用于说明历史背景，不作为新版已经实现功能的证据。截图来自隔离演示环境，电影海报和封面属于第三方内容，其来源和使用说明见项目 attribution 文件。',['https://github.com/RayXBuilds/Movie_Recommend',REPO,doc('recommendation-model-evaluation.md'),doc('recommendation-model-test.json'),doc('deployment.md'),doc('recommendation-models.md'),'https://grouplens.org/datasets/movielens/1m/']);
+text(s,'项目代码',56,176,1168,43,29,C.green,true);text(s,'github.com/RayXBuilds/cinematch-recommender',56,232,1168,48,32,C.ink);
 text(s,'算法与评估',56,324,1168,43,29,C.green,true);text(s,'docs/recommendation.md\ndocs/recommendation-model-evaluation.md\ndocs/recommendation-model-test.json',56,378,1168,126,26,C.ink);
 text(s,'部署与训练',56,538,1168,40,29,C.green,true);text(s,'docs/deployment.md  ·  docs/recommendation-models.md',56,591,1168,43,26,C.ink);
 }

@@ -120,7 +120,7 @@ scripts/         开发、构建、片库校验及目录导入工具
 docs/            部署操作、架构图、算法评估、数据来源与验收记录
 ```
 
-本项目是毕业设计 [Movie_Recommend](https://github.com/CodeRayZhang/Movie_Recommend) 的现代化重写，使用独立 Git 历史、数据库及部署配置，原仓库保留。新版可以单独部署和运行，无需启动旧项目及其 Spark、Hadoop 等组件。
+本项目是毕业设计 [Movie_Recommend](https://github.com/RayXBuilds/Movie_Recommend) 的现代化重写，使用独立 Git 历史、数据库及部署配置，原仓库保留。新版可以单独部署和运行，无需启动旧项目及其 Spark、Hadoop 等组件。
 
 新版使用自己的用户账号和观影数据。旧系统中的用户账号、历史评分及观影记录不会自动导入，旧版训练出的 ALS 模型文件也不会直接加载；目前没有提供从旧系统到新版的自动迁移工具。
 

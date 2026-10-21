@@ -220,6 +220,6 @@ Precision 是十二个推荐中命中未来正样本的比例。Recall 是未来
 - [模型训练与维护](../recommendation-models.md)
 - [部署步骤](../deployment.md)
 - [工程验收](../verification.md)
-- [旧项目](https://github.com/CodeRayZhang/Movie_Recommend)
+- [旧项目](https://github.com/RayXBuilds/Movie_Recommend)
 
 图表显示值按四位小数或百分数保留两位，PPT 图表内嵌工作簿保留八位小数；完整精度见原始 JSON。图表数据对应测试报告，并非截图演示模型的单独质量认证。

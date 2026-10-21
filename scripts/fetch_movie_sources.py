@@ -46,7 +46,7 @@ def main():
         } GROUP BY ?film ?douban ?imdb ?tmdb''' % ' '.join(json.dumps(v) for v in batch)
         url = 'https://query.wikidata.org/sparql?' + urllib.parse.urlencode({'query': query, 'format': 'json'})
         req = urllib.request.Request(url, headers={
-            'User-Agent': 'CineMatch/1.0 (https://github.com/CodeRayZhang/cinematch-recommender)',
+            'User-Agent': 'CineMatch/1.0 (https://github.com/RayXBuilds/cinematch-recommender)',
             'Accept': 'application/sparql-results+json',
         })
         for attempt in range(3):
